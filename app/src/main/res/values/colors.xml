@@ -12,4 +12,14 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
 
+    <color name="colorTitle">#efefef</color>
+    <color name="colorTitleLine">#e6e6e6</color>
+
+    <color name="bgLoginLight">#99404348</color>
+    <color name="bgLogin">#99000000</color>
+    <color name="editTextLogin">#9F9FA0</color>
+
+    <color name="bgButton">#d65025</color>
+    <color name="bgButtonPressed">#ed8a3a</color>
+
 </resources>

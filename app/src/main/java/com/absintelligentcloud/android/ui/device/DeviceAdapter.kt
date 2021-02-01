@@ -7,11 +7,11 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.absintelligentcloud.android.R
-import com.absintelligentcloud.android.logic.model.Device
+import com.absintelligentcloud.android.logic.model.DeviceResponse
 
-class DeviceAdapter(private val fragment: Fragment, private val deviceList: List<Device>) :
-
+class DeviceAdapter(private val fragment: Fragment, private val deviceList: List<DeviceResponse.Device>) :
     RecyclerView.Adapter<DeviceAdapter.ViewHolder>() {
+
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val deviceId: TextView = view.findViewById(R.id.deviceId)
         val deviceName: TextView = view.findViewById(R.id.deviceName)
@@ -28,9 +28,6 @@ class DeviceAdapter(private val fragment: Fragment, private val deviceList: List
         holder.deviceName.text = device.name
     }
 
-    override fun getItemCount(): Int {
-        return deviceList.size
-    }
-
+    override fun getItemCount(): Int = deviceList.size
 
 }

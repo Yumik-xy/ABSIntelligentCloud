@@ -1,9 +1,12 @@
 package com.absintelligentcloud.android.ui.device
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Adapter
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -36,7 +39,7 @@ class DeviceFragment : Fragment() {
         searchDeviceEdit.addTextChangedListener { editable ->
             val content = editable.toString()
             if (content.isNotEmpty()) {
-                viewModel.getDevice(content)
+                viewModel.searchDevices(content)
             } else {
                 recyclerView.visibility = View.GONE
                 bgImageView.visibility = View.VISIBLE
@@ -45,10 +48,11 @@ class DeviceFragment : Fragment() {
             }
         }
         viewModel.deviceLiveData.observe(viewLifecycleOwner, { result ->
+            Log.d("DeviceFragment", result.toString())
             val devices = result.getOrNull()
             if (devices != null) {
                 recyclerView.visibility = View.VISIBLE
-                recyclerView.visibility = View.GONE
+                bgImageView.visibility = View.GONE
                 viewModel.deviceList.clear()
                 viewModel.deviceList.addAll(devices)
                 adapter.notifyDataSetChanged()

@@ -2,11 +2,10 @@ package com.absintelligentcloud.android.logic.network
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 
 object ServiceCreator {
 
-    private const val BASE_URL = "http://127.0.0.1/"
+    private const val BASE_URL = "http://192.144.170.159:55555/"
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)

@@ -6,15 +6,28 @@
 
     <ImageView
         android:id="@+id/bgImageView"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/ic_device" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp"
+        android:text="暂无设备"
+        android:textColor="#d65025"
+        android:textSize="16sp" />
 
     <FrameLayout
         android:id="@+id/actionBarLayout"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="@color/purple_500">
+        android:background="#d65025">
 
         <EditText
             android:id="@+id/searchDeviceEdit"
@@ -26,7 +39,7 @@
             android:background="@drawable/search_bg"
             android:hint="输入设备名"
             android:paddingStart="10dp"
-            android:paddingBottom="10dp" />
+            android:paddingEnd="10dp" />
     </FrameLayout>
 
     <androidx.recyclerview.widget.RecyclerView
