@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.absintelligentcloud.android.logic.Repository
+import com.absintelligentcloud.android.logic.dao.AreaDao
 import com.absintelligentcloud.android.logic.model.AreaResponse
 
 class AreaViewModel : ViewModel() {
@@ -19,5 +20,11 @@ class AreaViewModel : ViewModel() {
     fun getAreaList(query: Boolean) {
         getLiveData.value = query
     }
+
+    fun saveArea(area: AreaResponse.Data) = Repository.saveArea(area)
+
+    fun getSavedArea() = Repository.getSavedArea()
+
+    fun isAreaSaved() = Repository.isAreaSaved()
 
 }

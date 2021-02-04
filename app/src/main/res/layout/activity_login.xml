@@ -16,7 +16,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/bgLoginLight"
+            android:background="@color/black"
             android:gravity="center"
             android:paddingTop="20dp"
             android:paddingBottom="20dp">
@@ -33,7 +33,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/bgLogin"
+            android:background="@color/black"
             android:orientation="horizontal"
             android:paddingTop="20dp"
             android:paddingBottom="20dp">
@@ -48,14 +48,14 @@
                 android:background="@null"
                 android:hint="your username"
                 android:textColor="@color/white"
-                android:textColorHint="@color/editTextLogin" />
+                android:textColorHint="@color/whiteLight" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/bgLogin"
+            android:background="@color/black"
             android:orientation="horizontal"
             android:paddingTop="20dp"
             android:paddingBottom="20dp">
@@ -70,14 +70,14 @@
                 android:background="@null"
                 android:hint="your password"
                 android:textColor="@color/white"
-                android:textColorHint="@color/editTextLogin" />
+                android:textColorHint="@color/whiteLight" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/bgLoginLight"
+            android:background="@color/black"
             android:orientation="horizontal"
             android:paddingTop="40dp"
             android:paddingBottom="40dp">

@@ -13,10 +13,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ABSIntelligentCloud">
+        <activity android:name=".ui.manage.ManageActivity" />
+        <activity
+            android:name=".ui.device.DeviceActivity"
+            android:label="设备查询" />
         <activity
             android:name=".ui.login.LoginActivity"
             android:launchMode="singleInstance" />
-        <activity android:name=".ui.manage.ManageActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

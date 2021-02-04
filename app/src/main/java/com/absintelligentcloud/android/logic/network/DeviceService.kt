@@ -1,16 +1,23 @@
 package com.absintelligentcloud.android.logic.network
 
 import com.absintelligentcloud.android.ABSIntelligentCloudApplication
+import com.absintelligentcloud.android.logic.model.DeviceBody
 import com.absintelligentcloud.android.logic.model.DeviceResponse
+import com.absintelligentcloud.android.logic.model.StatusDeviceBody
 import retrofit2.Call
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface DeviceService {
-    @GET("get_data.json")
+    @POST("api/abs/pagination")
     fun searchDevices(
-        @Query("query") query: String,
-        @Header("token") token: String = ABSIntelligentCloudApplication.token
+        @Body data: DeviceBody,
+        @Header("Authorization") Authorization: String = ABSIntelligentCloudApplication.token
     ): Call<DeviceResponse>
+
+    @POST("api/abs/status/pagination")
+    fun getStatusDevices(
+        @Body data: StatusDeviceBody,
+        @Header("Authorization") Authorization: String = ABSIntelligentCloudApplication.token
+    ): Call<DeviceResponse>
+
 }

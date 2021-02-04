@@ -2,7 +2,9 @@ package com.absintelligentcloud.android.logic.network
 
 import android.util.Log
 import com.absintelligentcloud.android.logic.model.AreaResponse
+import com.absintelligentcloud.android.logic.model.DeviceBody
 import com.absintelligentcloud.android.logic.model.LoginUserBody
+import com.absintelligentcloud.android.logic.model.StatusDeviceBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -19,7 +21,12 @@ object ABSIntelligentCloudNetwork {
     private val areaResponse = ServiceCreator.create(AreaService::class.java)
 
     //    然后定义了 searchDevices 函数，也就是 DeviceService 接口的内容
-    suspend fun searchDevices(query: String) = deviceService.searchDevices(query).await()
+    suspend fun searchDevices(deviceBody: DeviceBody) =
+        deviceService.searchDevices(deviceBody).await()
+
+    suspend fun getStatusDevices(page: Int) =
+        deviceService.getStatusDevices(StatusDeviceBody(page)).await()
+
     suspend fun loginNormal(user: LoginUserBody) = loginService.loginNormal(user).await()
     suspend fun getAreaList() = areaResponse.getAreaList().await()
 

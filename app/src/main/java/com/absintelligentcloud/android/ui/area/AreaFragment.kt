@@ -6,23 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.absintelligentcloud.android.ABSIntelligentCloudApplication
 import com.absintelligentcloud.android.R
-import com.absintelligentcloud.android.logic.Repository
 import com.absintelligentcloud.android.logic.model.AreaResponse
-import kotlinx.android.synthetic.main.activity_manage.*
-import kotlinx.android.synthetic.main.fragment_area.*
+import com.absintelligentcloud.android.logic.util.setSpinnerItemSelectedByValue
 import kotlinx.android.synthetic.main.fragment_area.areaSpin
-import kotlinx.android.synthetic.main.fragment_device.*
 
 class AreaFragment : Fragment() {
 
-    private val viewModel by lazy { ViewModelProvider(this).get(AreaViewModel::class.java) }
+    lateinit var areaId: String
+
+    val viewModel by lazy { ViewModelProvider(this).get(AreaViewModel::class.java) }
 
     private lateinit var adapter: AreaAdapter
 
@@ -46,8 +42,9 @@ class AreaFragment : Fragment() {
                 position: Int,
                 id: Long
             ) {
-                val areaName = viewModel.areaList[position].areaName
-                Toast.makeText(activity, "You click item is $areaName", Toast.LENGTH_SHORT).show()
+                val area = viewModel.areaList[position]
+                areaId = area.areaId
+                viewModel.saveArea(area)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -67,8 +64,13 @@ class AreaFragment : Fragment() {
             val areas = result.getOrNull()
             if (areas != null) {
                 viewModel.areaList.clear()
-                viewModel.areaList.addAll(areas)
+                var newAreas = listOf(AreaResponse.Data("", " 全部 "))
+                newAreas = newAreas.plus(areas)
+                viewModel.areaList.addAll(newAreas)
                 adapter.notifyDataSetChanged()
+                if (viewModel.isAreaSaved()) {
+                    setSpinnerItemSelectedByValue(areaSpin, viewModel.getSavedArea())
+                }
             } else {
                 Toast.makeText(activity, "未获取到区域", Toast.LENGTH_SHORT).show()
                 result.exceptionOrNull()?.printStackTrace()

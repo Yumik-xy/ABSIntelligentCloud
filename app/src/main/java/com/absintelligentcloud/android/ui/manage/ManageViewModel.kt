@@ -5,20 +5,22 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.absintelligentcloud.android.logic.Repository
 import com.absintelligentcloud.android.logic.model.AreaResponse
+import com.absintelligentcloud.android.logic.model.DeviceBody
 import com.absintelligentcloud.android.logic.model.DeviceResponse
 
 class ManageViewModel : ViewModel() {
 
-    private val getLiveData = MutableLiveData<AreaResponse.Data>()
+    private val getStatusLiveData = MutableLiveData<Int>()
 
-    var areaList = ArrayList<AreaResponse.Data>()
+    val deviceList = ArrayList<DeviceResponse.Device>()
 
-    val areaLiveData = Transformations.switchMap(getLiveData) {
-        Repository.getAreaList()
+    val deviceLiveData = Transformations.switchMap(getStatusLiveData) { page ->
+        Repository.getStatusDevices(page)
     }
 
-    fun getAreaList(query: AreaResponse.Data) {
-        getLiveData.value = query
+
+    fun getStatusDevices(page: Int) {
+        getStatusLiveData.value = page
     }
 
 }
