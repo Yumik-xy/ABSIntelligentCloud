@@ -12,6 +12,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.absintelligentcloud.android.R
 import com.absintelligentcloud.android.logic.model.AreaResponse
 import com.absintelligentcloud.android.logic.util.setSpinnerItemSelectedByValue
+import com.absintelligentcloud.android.ui.detail.DetailActivity
+import com.absintelligentcloud.android.ui.device.DeviceActivity
+import com.absintelligentcloud.android.ui.manage.ManageActivity
 import kotlinx.android.synthetic.main.fragment_area.areaSpin
 
 class AreaFragment : Fragment() {
@@ -44,7 +47,10 @@ class AreaFragment : Fragment() {
             ) {
                 val area = viewModel.areaList[position]
                 areaId = area.areaId
-                viewModel.saveArea(area)
+                if (activity is ManageActivity) {
+                    viewModel.setAreaNow(area)
+                    viewModel.saveArea(area)
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -64,11 +70,15 @@ class AreaFragment : Fragment() {
             val areas = result.getOrNull()
             if (areas != null) {
                 viewModel.areaList.clear()
-                var newAreas = listOf(AreaResponse.Data("", " 全部 "))
-                newAreas = newAreas.plus(areas)
-                viewModel.areaList.addAll(newAreas)
+                if (activity !is DetailActivity) {
+                    var newAreas = listOf(AreaResponse.Data("", " 全部 "))
+                    newAreas = newAreas.plus(areas)
+                    viewModel.areaList.addAll(newAreas)
+                } else {
+                    viewModel.areaList.addAll(areas)
+                }
                 adapter.notifyDataSetChanged()
-                if (viewModel.isAreaSaved()) {
+                if (viewModel.isAreaSaved() && activity is ManageActivity) {
                     setSpinnerItemSelectedByValue(areaSpin, viewModel.getSavedArea())
                 }
             } else {

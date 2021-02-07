@@ -1,3 +1,3 @@
 package com.absintelligentcloud.android.logic.model
 
-data class StatusDeviceBody(val page: Int)
+data class StatusDeviceBody(val page: Int, val areaId: String)

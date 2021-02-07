@@ -6,20 +6,20 @@ import com.absintelligentcloud.android.ABSIntelligentCloudApplication
 import com.absintelligentcloud.android.logic.model.AreaResponse
 import com.google.gson.Gson
 
-object AreaDao {
+object LoginDao {
 
-    fun saveArea(area: AreaResponse.Data) {
+    fun saveToken(token: String) {
         sharedPreferences().edit() {
-            putString("area", Gson().toJson(area))
+            putString("token", token)
         }
     }
 
-    fun getSavedArea(): AreaResponse.Data {
-        val areaJson = sharedPreferences().getString("area", "")
-        return Gson().fromJson(areaJson, AreaResponse.Data::class.java)
+    fun getSavedToken(): String {
+        val token = sharedPreferences().getString("token", "") ?: ""
+        return token
     }
 
-    fun isAreaSaved() = sharedPreferences().contains("area")
+    fun isTokenSaved() = sharedPreferences().contains("token")
 
     private fun sharedPreferences() = ABSIntelligentCloudApplication.context.getSharedPreferences(
         "abs_intelligent_cloud",

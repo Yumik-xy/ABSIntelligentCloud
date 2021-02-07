@@ -4,13 +4,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.absintelligentcloud.android.logic.Repository
-import com.absintelligentcloud.android.logic.model.LoginUserBody
+import com.absintelligentcloud.android.logic.model.LoginBody
 
 class LoginViewModel : ViewModel() {
 
-    private val userLiveData = MutableLiveData<LoginUserBody>()
+    private val userLiveData = MutableLiveData<LoginBody>()
 
-    var user = ""
+    var username = ""
 
     var password = ""
 
@@ -18,8 +18,10 @@ class LoginViewModel : ViewModel() {
         Repository.loginNormal(user)
     }
 
-    fun loginNormal(user: LoginUserBody) {
+    fun loginNormal(user: LoginBody) {
         userLiveData.value = user
     }
+
+    fun saveToken(token: String) = Repository.saveToken(token)
 
 }

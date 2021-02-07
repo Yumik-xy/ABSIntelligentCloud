@@ -199,6 +199,23 @@
             android:paddingStart="10dp"
             android:paddingEnd="10dp" />
 
+<!--        没用不显示-->
+        <TextView
+            android:id="@+id/productionDateEdit"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/background_edittext"
+            android:hint="轮胎生产日期"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:visibility="gone" />
+
         <Button
             android:id="@+id/clearBtn"
             android:layout_width="match_parent"

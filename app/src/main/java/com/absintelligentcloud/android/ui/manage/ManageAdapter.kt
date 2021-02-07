@@ -1,4 +1,4 @@
-package com.absintelligentcloud.android.ui.device
+package com.absintelligentcloud.android.ui.manage
 
 import android.content.Context
 import android.content.Intent
@@ -6,21 +6,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.absintelligentcloud.android.R
 import com.absintelligentcloud.android.logic.model.DeviceResponse
 import com.absintelligentcloud.android.ui.detail.DetailActivity
+import com.absintelligentcloud.android.ui.device.DeviceAdapter
 import java.text.SimpleDateFormat
 import java.util.*
 
-class DeviceAdapter(
+class ManageAdapter(
     private val context: Context,
     private val deviceList: List<DeviceResponse.Device>
 ) :
-    RecyclerView.Adapter<DeviceAdapter.ViewHolder>() {
+    RecyclerView.Adapter<ManageAdapter.ViewHolder>() {
 
     companion object {
-        const val FUN_UPDATE = 3
+        const val FUN_SOLVE = 1
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -34,7 +36,8 @@ class DeviceAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.device_item, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.device_item_nocard, parent, false)
         return ViewHolder(view)
     }
 
@@ -52,7 +55,7 @@ class DeviceAdapter(
         holder.itemView.setOnClickListener {
             val intent = Intent(context, DetailActivity::class.java)
             intent.putExtra("device_id", device.deviceId)
-            intent.putExtra("function", FUN_UPDATE)
+            intent.putExtra("function", FUN_SOLVE)
             context.startActivity(intent)
         }
     }

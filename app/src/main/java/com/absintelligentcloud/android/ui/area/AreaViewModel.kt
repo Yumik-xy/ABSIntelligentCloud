@@ -11,14 +11,21 @@ class AreaViewModel : ViewModel() {
 
     private val getLiveData = MutableLiveData<Boolean>()
 
+    val areaNow = MutableLiveData<AreaResponse.Data>()
+
     val areaList = ArrayList<AreaResponse.Data>()
 
     val areaLiveData = Transformations.switchMap(getLiveData) {
         Repository.getAreaList()
     }
 
+
     fun getAreaList(query: Boolean) {
         getLiveData.value = query
+    }
+
+    fun setAreaNow(value: AreaResponse.Data) {
+        areaNow.value = value
     }
 
     fun saveArea(area: AreaResponse.Data) = Repository.saveArea(area)

@@ -3,11 +3,9 @@ package com.absintelligentcloud.android.logic
 import android.util.Log
 import androidx.lifecycle.liveData
 import com.absintelligentcloud.android.logic.dao.AreaDao
-import com.absintelligentcloud.android.logic.model.AreaResponse
-import com.absintelligentcloud.android.logic.model.DeviceBody
-import com.absintelligentcloud.android.logic.model.LoginUserBody
+import com.absintelligentcloud.android.logic.dao.LoginDao
+import com.absintelligentcloud.android.logic.model.*
 import com.absintelligentcloud.android.logic.network.ABSIntelligentCloudNetwork
-import com.absintelligentcloud.android.ui.device.DeviceViewModel
 import kotlinx.coroutines.Dispatchers
 import java.lang.Exception
 import java.lang.RuntimeException
@@ -26,8 +24,8 @@ object Repository {
         }
     }
 
-    fun getStatusDevices(page: Int) = fire(Dispatchers.IO) {
-        val deviceResponse = ABSIntelligentCloudNetwork.getStatusDevices(page)
+    fun getStatusDevices(statusDeviceBody: StatusDeviceBody) = fire(Dispatchers.IO) {
+        val deviceResponse = ABSIntelligentCloudNetwork.getStatusDevices(statusDeviceBody)
         if (deviceResponse.success) {
             Log.d("Repository", deviceResponse.toString())
             val devices = deviceResponse.data.list
@@ -37,14 +35,14 @@ object Repository {
         }
     }
 
-    fun loginNormal(user: LoginUserBody) = fire(Dispatchers.IO) {
+    fun loginNormal(user: LoginBody) = fire(Dispatchers.IO) {
         val loginResponse = ABSIntelligentCloudNetwork.loginNormal(user)
         Log.d("Repository", loginResponse.toString())
-        if (loginResponse.status == "ok") {
-            val login = loginResponse.login
+        if (loginResponse.code == 0) {
+            val login = loginResponse.data
             Result.success(login)
         } else {
-            Result.failure(RuntimeException("response status is ${loginResponse.status}."))
+            Result.failure(RuntimeException("response message is ${loginResponse.message}."))
         }
     }
 
@@ -64,6 +62,58 @@ object Repository {
     fun getSavedArea() = AreaDao.getSavedArea()
 
     fun isAreaSaved() = AreaDao.isAreaSaved()
+
+    fun saveToken(token: String) = LoginDao.saveToken(token)
+
+    fun getSavedToken() = LoginDao.getSavedToken()
+
+    fun isTokenSaved() = LoginDao.isTokenSaved()
+
+    fun addDevice(device: DetailBody) = fire(Dispatchers.IO) {
+        val normalResponse = ABSIntelligentCloudNetwork.addDevice(device)
+        if (normalResponse.success) {
+            Result.success(normalResponse)
+        } else {
+            Result.failure(RuntimeException("response message is ${normalResponse.message}."))
+        }
+    }
+
+    fun getDevice(deviceId: String) = fire(Dispatchers.IO) {
+        val detailResponse = ABSIntelligentCloudNetwork.getDevice(deviceId)
+        if (detailResponse.success) {
+            val devices = detailResponse.data
+            Result.success(devices)
+        } else {
+            Result.failure(RuntimeException("response message is ${detailResponse.message}."))
+        }
+    }
+
+    fun updateDevice(device: DetailBody) = fire(Dispatchers.IO) {
+        val normalResponse = ABSIntelligentCloudNetwork.updateDevice(device)
+        if (normalResponse.success) {
+            Result.success(normalResponse)
+        } else {
+            Result.failure(RuntimeException("response message is ${normalResponse.message}."))
+        }
+    }
+
+    fun deleteDevice(deviceId: String) = fire(Dispatchers.IO) {
+        val normalResponse = ABSIntelligentCloudNetwork.deleteDevice(deviceId)
+        if (normalResponse.success) {
+            Result.success(normalResponse)
+        } else {
+            Result.failure(RuntimeException("response message is ${normalResponse.message}."))
+        }
+    }
+
+    fun solveDevice(deviceId: String) = fire(Dispatchers.IO) {
+        val normalResponse = ABSIntelligentCloudNetwork.solveDevice(deviceId)
+        if (normalResponse.success) {
+            Result.success(normalResponse)
+        } else {
+            Result.failure(RuntimeException("response message is ${normalResponse.message}."))
+        }
+    }
 
     private fun <T> fire(context: CoroutineContext, block: suspend () -> Result<T>) =
         liveData<Result<T>>(context) {
