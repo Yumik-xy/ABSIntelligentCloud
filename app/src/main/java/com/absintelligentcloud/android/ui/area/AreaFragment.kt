@@ -1,7 +1,9 @@
 package com.absintelligentcloud.android.ui.area
 
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +37,13 @@ class AreaFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        if (activity !is ManageActivity) {
+            areaSpin.background =
+                resources.getDrawable(R.drawable.background_area_spin, resources.newTheme())
+            areaSpin.gravity = Gravity.LEFT
+        }
+
         adapter = AreaAdapter(this, viewModel.areaList)
         areaSpin.adapter = adapter
         areaSpin.onItemSelectedListener = object : AdapterView.OnItemClickListener,

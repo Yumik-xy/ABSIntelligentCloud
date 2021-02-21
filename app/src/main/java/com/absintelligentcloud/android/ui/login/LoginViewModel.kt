@@ -23,5 +23,4 @@ class LoginViewModel : ViewModel() {
     }
 
     fun saveToken(token: String) = Repository.saveToken(token)
-
 }

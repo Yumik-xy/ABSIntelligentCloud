@@ -20,9 +20,50 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/whiteLight"
+                app:contentInsetEnd="0dp"
+                app:contentInsetLeft="0dp"
+                app:contentInsetStart="0dp"
                 app:layout_scrollFlags="scroll|enterAlways|snap"
+                app:maxButtonHeight="20dp"
+                app:titleMargin="0dp"
                 app:titleTextColor="@color/blackDark">
 
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/backDeviceBtn"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:background="@drawable/ic_back" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@+id/backDeviceBtn"
+                        android:text="设备检索"
+                        android:textColor="@color/blackDark"
+                        android:textFontWeight="500"
+                        android:textSize="20sp" />
+
+
+                    <ImageView
+                        android:id="@+id/showSearchBtn"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="5dp"
+                        android:background="@drawable/ic_search" />
+
+                </RelativeLayout>
 
             </androidx.appcompat.widget.Toolbar>
 
@@ -30,7 +71,7 @@
 
 
         <LinearLayout
-            android:id="@+id/bgImageView"
+            android:id="@+id/bgDeviceImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -67,8 +108,10 @@
     <LinearLayout
         android:layout_width="300dp"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
+        android:layout_gravity="end"
         android:background="@color/whiteLight"
+        android:clickable="true"
+        android:focusable="true"
         android:orientation="vertical"
         android:paddingStart="10dp"
         android:paddingTop="35dp"
@@ -113,7 +156,7 @@
             android:layout_marginEnd="10dp"
             android:background="@drawable/background_edittext"
             android:ellipsize="end"
-            android:hint="ABS设备型号"
+            android:hint="设备型号"
             android:inputType="text"
             android:maxLines="1"
             android:paddingStart="10dp"
@@ -129,7 +172,7 @@
             android:layout_marginEnd="10dp"
             android:background="@drawable/background_edittext"
             android:ellipsize="end"
-            android:hint="设备型号"
+            android:hint="设备编号"
             android:inputType="text"
             android:maxLines="1"
             android:paddingStart="10dp"
@@ -177,7 +220,7 @@
             android:layout_marginEnd="10dp"
             android:background="@drawable/background_edittext"
             android:ellipsize="end"
-            android:hint="代理商名称"
+            android:hint="代理商户"
             android:inputType="text"
             android:maxLines="1"
             android:paddingStart="10dp"
@@ -199,7 +242,7 @@
             android:paddingStart="10dp"
             android:paddingEnd="10dp" />
 
-<!--        没用不显示-->
+        <!--        没用不显示-->
         <TextView
             android:id="@+id/productionDateEdit"
             android:layout_width="match_parent"
@@ -209,7 +252,7 @@
             android:layout_marginTop="5dp"
             android:layout_marginEnd="10dp"
             android:background="@drawable/background_edittext"
-            android:hint="轮胎生产日期"
+            android:hint="轮胎日期"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
             android:textColor="@color/black"

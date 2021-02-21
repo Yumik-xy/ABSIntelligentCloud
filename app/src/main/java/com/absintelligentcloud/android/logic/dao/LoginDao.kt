@@ -14,6 +14,12 @@ object LoginDao {
         }
     }
 
+    fun removeToken() {
+        sharedPreferences().edit() {
+            remove("token")
+        }
+    }
+
     fun getSavedToken(): String {
         val token = sharedPreferences().getString("token", "") ?: ""
         return token

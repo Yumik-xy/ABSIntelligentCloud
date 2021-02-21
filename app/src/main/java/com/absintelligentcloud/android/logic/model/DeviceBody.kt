@@ -5,7 +5,7 @@ data class DeviceBody(
     val deviceId: String,
     val areaId: String,
     val userName: String,
-    val productionDate: Long,
+//    val productionDate: Long,
     val contactNumber: String,
     val agentName: String,
     val tireBrand: String,

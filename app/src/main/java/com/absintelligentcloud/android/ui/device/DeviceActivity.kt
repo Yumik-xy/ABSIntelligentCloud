@@ -5,22 +5,19 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem
-import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout.SimpleDrawerListener
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.absintelligentcloud.android.R
 import com.absintelligentcloud.android.logic.model.DeviceBody
 import com.absintelligentcloud.android.logic.util.OnLoadMoreListener
 import com.absintelligentcloud.android.ui.area.AreaFragment
-import kotlinx.android.synthetic.main.activity_detail.*
 import kotlinx.android.synthetic.main.activity_device.*
 import kotlinx.android.synthetic.main.activity_device.absTypeEdit
 import kotlinx.android.synthetic.main.activity_device.agentNameEdit
@@ -31,7 +28,6 @@ import kotlinx.android.synthetic.main.activity_device.productionDateEdit
 import kotlinx.android.synthetic.main.activity_device.tireBrandEdit
 import kotlinx.android.synthetic.main.activity_device.toolbar
 import kotlinx.android.synthetic.main.activity_device.userNameEdit
-import kotlinx.android.synthetic.main.activity_manage.*
 import java.util.*
 
 
@@ -49,12 +45,13 @@ class DeviceActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_device)
         setSupportActionBar(toolbar)
-        supportActionBar?.let {
-            it.setDisplayHomeAsUpEnabled(true)
-            it.setHomeAsUpIndicator(R.drawable.ic_search)
-        }
+//        supportActionBar?.let {
+//            it.setDisplayHomeAsUpEnabled(true)
+//            it.setHomeAsUpIndicator(R.drawable.ic_search)
+//        }
 
         val layoutManager = LinearLayoutManager(this)
+//        val layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.layoutManager = layoutManager
         adapter = DeviceAdapter(this, viewModel.deviceList)
         recyclerView.adapter = adapter
@@ -70,6 +67,7 @@ class DeviceActivity : AppCompatActivity() {
             contactNumberEdit.text.clear()
             agentNameEdit.text.clear()
             tireBrandEdit.text.clear()
+            productionDateEdit.text = ""
             page = 1
         }
 
@@ -89,7 +87,7 @@ class DeviceActivity : AppCompatActivity() {
             val devices = result.getOrNull()
             if (devices != null && devices.isNotEmpty()) {
                 recyclerView.visibility = View.VISIBLE
-                bgImageView.visibility = View.GONE
+                bgDeviceImageView.visibility = View.GONE
                 if (page == 1) {
                     viewModel.deviceList.clear()
                 }
@@ -97,10 +95,11 @@ class DeviceActivity : AppCompatActivity() {
                 adapter.notifyDataSetChanged()
             } else if (page != 1) {
                 page = 1.coerceAtLeast(page - 1)
-                Toast.makeText(this, "没有更多的设备了", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(this, "没有更多的设备了", Toast.LENGTH_SHORT).show()
+                adapter.notifyDataSetChanged()
             } else {
                 recyclerView.visibility = View.GONE
-                bgImageView.visibility = View.VISIBLE
+                bgDeviceImageView.visibility = View.VISIBLE
                 viewModel.deviceList.clear()
                 adapter.notifyDataSetChanged()
                 page = 1.coerceAtLeast(page - 1)
@@ -128,21 +127,22 @@ class DeviceActivity : AppCompatActivity() {
             )
             datePickerDialog.show()
         }
+
+        showSearchBtn.setOnClickListener {
+            drawerLayout.openDrawer(GravityCompat.END)
+        }
+
+        backDeviceBtn.setOnClickListener {
+            finish()
+        }
     }
 
     override fun onResume() {
         super.onResume()
         if (!firstStart) {
             firstStart = true
-            drawerLayout.openDrawer(GravityCompat.START)
+            drawerLayout.openDrawer(GravityCompat.END)
         }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> drawerLayout.openDrawer(GravityCompat.START)
-        }
-        return true
     }
 
     private fun searchDevice() {
@@ -151,13 +151,13 @@ class DeviceActivity : AppCompatActivity() {
         val areaFrag = areaChoiceFragment as AreaFragment
         val areaId = areaFrag.areaId
         val userName = userNameEdit.text.toString()
-        val productionDateText = productionDateEdit.text
-        val dataList = productionDateText.split("-")
-        val productionDate = GregorianCalendar(
-            dataList[0].toInt(),
-            dataList[1].toInt() - 1,
-            dataList[2].toInt()
-        ).timeInMillis
+//        val productionDateText = productionDateEdit.text
+//        val dataList = productionDateText.split("-")
+//        val productionDate = GregorianCalendar(
+//            dataList[0].toInt(),
+//            dataList[1].toInt() - 1,
+//            dataList[2].toInt()
+//        ).timeInMillis
         val contactNumber = contactNumberEdit.text.toString()
         val agentName = agentNameEdit.text.toString()
         val tireBrand = tireBrandEdit.text.toString()
@@ -167,13 +167,13 @@ class DeviceActivity : AppCompatActivity() {
                 deviceId,
                 areaId,
                 userName,
-                productionDate,
+//                productionDate,
                 contactNumber,
                 agentName,
                 tireBrand,
                 page
             )
         viewModel.searchDevices(deviceBody)
-        drawerLayout.closeDrawer(GravityCompat.START)
+        drawerLayout.closeDrawer(GravityCompat.END)
     }
 }

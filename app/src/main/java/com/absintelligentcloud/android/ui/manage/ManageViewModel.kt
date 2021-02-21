@@ -24,4 +24,7 @@ class ManageViewModel : ViewModel() {
         getStatusLiveData.value = statusDeviceBody
     }
 
+    fun removeToken() = Repository.removeToken()
+
+    fun updatePassword(md5Password: String) = Repository.updatePassword(md5Password)
 }

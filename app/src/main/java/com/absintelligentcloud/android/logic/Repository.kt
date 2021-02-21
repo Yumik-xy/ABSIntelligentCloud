@@ -65,6 +65,8 @@ object Repository {
 
     fun saveToken(token: String) = LoginDao.saveToken(token)
 
+    fun removeToken() = LoginDao.removeToken()
+
     fun getSavedToken() = LoginDao.getSavedToken()
 
     fun isTokenSaved() = LoginDao.isTokenSaved()
@@ -112,6 +114,26 @@ object Repository {
             Result.success(normalResponse)
         } else {
             Result.failure(RuntimeException("response message is ${normalResponse.message}."))
+        }
+    }
+
+    fun getHistory(history: HistoryBody) = fire(Dispatchers.IO) {
+        val historyResponse = ABSIntelligentCloudNetwork.getHistory(history)
+        Log.d("Repository", historyResponse.toString())
+        if (historyResponse.success) {
+            val histories = historyResponse.data.list
+            Result.success(histories)
+        } else {
+            Result.failure(RuntimeException("response message is ${historyResponse.message}."))
+        }
+    }
+
+    fun updatePassword(md5Password: String) = fire(Dispatchers.IO) {
+        val updatePasswordResponse = ABSIntelligentCloudNetwork.updatePassword(md5Password)
+        if (updatePasswordResponse.success) {
+            Result.success(updatePasswordResponse.message)
+        } else {
+            Result.failure(RuntimeException("response message is ${updatePasswordResponse.message}."))
         }
     }
 

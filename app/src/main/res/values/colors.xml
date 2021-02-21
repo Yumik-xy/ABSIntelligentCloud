@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="white">#FFFFFFFF</color>
+    <color name="whiteDarkLittle">#BFFFFFFF</color>
     <color name="whiteLight">#efefef</color>
     <color name="whiteDark">#e6e6e6</color>
 
     <color name="black">#99404348</color>
+    <color name="blackDarkLittle">#DF404348</color>
     <color name="blackDark">#99000000</color>
     <color name="blackLight">#9F9FA0</color>
 

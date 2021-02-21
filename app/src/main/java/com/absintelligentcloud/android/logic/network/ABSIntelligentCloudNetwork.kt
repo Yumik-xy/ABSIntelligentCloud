@@ -1,10 +1,7 @@
 package com.absintelligentcloud.android.logic.network
 
 import android.util.Log
-import com.absintelligentcloud.android.logic.model.DetailBody
-import com.absintelligentcloud.android.logic.model.DeviceBody
-import com.absintelligentcloud.android.logic.model.LoginBody
-import com.absintelligentcloud.android.logic.model.StatusDeviceBody
+import com.absintelligentcloud.android.logic.model.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -20,6 +17,8 @@ object ABSIntelligentCloudNetwork {
     private val loginService = ServiceCreator.create(LoginService::class.java)
     private val areaService = ServiceCreator.create(AreaService::class.java)
     private val detailService = ServiceCreator.create(DetailService::class.java)
+    private val historyService = ServiceCreator.create(HistoryService::class.java)
+    private val manageService = ServiceCreator.create(ManageService::class.java)
 
     //    然后定义了 searchDevices 函数，也就是 DeviceService 接口的内容
     suspend fun searchDevices(deviceBody: DeviceBody) =
@@ -36,6 +35,10 @@ object ABSIntelligentCloudNetwork {
     suspend fun updateDevice(device: DetailBody) = detailService.updateDevice(device).await()
     suspend fun deleteDevice(deviceId: String) = detailService.deleteDevice(deviceId).await()
     suspend fun solveDevice(deviceId: String) = detailService.solveDevice(deviceId).await()
+    suspend fun getHistory(history: HistoryBody) = historyService.getHistory(history).await()
+
+    suspend fun updatePassword(md5Password: String) =
+        manageService.updatePassword(md5Password).await()
 
     private suspend fun <T> Call<T>.await(): T {
         return suspendCoroutine { continuation ->

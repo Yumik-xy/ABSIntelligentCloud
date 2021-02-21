@@ -1,30 +1,27 @@
 package com.absintelligentcloud.android.ui.detail
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.DatePickerDialog
-import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.absintelligentcloud.android.R
 import com.absintelligentcloud.android.logic.model.DetailBody
 import com.absintelligentcloud.android.logic.util.setSpinnerItemSelectedByValue
 import com.absintelligentcloud.android.ui.area.AreaFragment
 import kotlinx.android.synthetic.main.activity_detail.*
-import kotlinx.android.synthetic.main.activity_detail.absTypeEdit
-import kotlinx.android.synthetic.main.activity_detail.agentNameEdit
-import kotlinx.android.synthetic.main.activity_detail.areaChoiceFragment
-import kotlinx.android.synthetic.main.activity_detail.contactNumberEdit
-import kotlinx.android.synthetic.main.activity_detail.deviceIdEdit
-import kotlinx.android.synthetic.main.activity_detail.tireBrandEdit
-import kotlinx.android.synthetic.main.activity_detail.toolbar
-import kotlinx.android.synthetic.main.activity_detail.userNameEdit
 import kotlinx.android.synthetic.main.fragment_area.*
 import java.text.SimpleDateFormat
 import java.util.*
+import android.content.DialogInterface
+import android.content.Intent
+import android.net.Uri
+import android.os.SystemClock
+import com.absintelligentcloud.android.ABSIntelligentCloudApplication
+
 
 class DetailActivity : AppCompatActivity() {
 
@@ -32,6 +29,7 @@ class DetailActivity : AppCompatActivity() {
         const val FUN_SOLVE = 1
         const val FUN_ADD = 2
         const val FUN_UPDATE = 3
+        const val FUN_READONLY = 4
     }
 
     private val viewModel by lazy { ViewModelProvider(this).get(DetailViewModel::class.java) }
@@ -71,9 +69,16 @@ class DetailActivity : AppCompatActivity() {
                 contactNumberEdit.setText(detail.contactNumber)
                 agentNameEdit.setText(detail.agentName)
                 tireBrandEdit.setText(detail.tireBrand)
-                val simpleDataFormat = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
+                val simpleDataFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 productionDateEdit.text = simpleDataFormat.format(detail.productionDate)
-                setSpinnerItemSelectedByValue(areaChoiceFragment.areaSpin, detail.areaId)
+
+                val areaFrag = areaChoiceFragment as AreaFragment
+                val areaList = areaFrag.viewModel.areaList
+                for (area in areaList) {
+                    if (detail.areaId == area.areaId) {
+                        setSpinnerItemSelectedByValue(areaChoiceFragment.areaSpin, area)
+                    }
+                }
             } else {
                 Toast.makeText(this, "无法获取详情信息", Toast.LENGTH_SHORT).show()
             }
@@ -84,23 +89,24 @@ class DetailActivity : AppCompatActivity() {
                 setClickable(true)
                 saveBtn.visibility = View.VISIBLE
             }
-            FUN_UPDATE -> updateBtn.visibility = View.VISIBLE
-            FUN_SOLVE -> solveBtn.visibility = View.VISIBLE
+            FUN_UPDATE -> {
+                deleteBtn.visibility = View.VISIBLE
+                updateBtn.visibility = View.VISIBLE
+            }
+            FUN_SOLVE -> {
+                solveBtn.visibility = View.VISIBLE
+            }
         }
 
         solveBtn.setOnClickListener {
-            viewModel.solveDevice(deviceId)
+            AlertDialog.Builder(this)
+                .setTitle("警告")
+                .setMessage("确定是否已解决")
+                .setPositiveButton("确认") { dialogInterface, i ->
+                    viewModel.solveDevice(deviceId)
+                }.setNegativeButton("取消") { dialogInterface, i -> }
+                .show()
         }
-
-        viewModel.solveResponseLiveData.observe(this, { result ->
-            val response = result.getOrNull()
-            if (response != null) {
-                solveBtn.visibility = View.GONE
-                Toast.makeText(this, "问题已解决！", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "提交失败，请检查网络！", Toast.LENGTH_SHORT).show()
-            }
-        })
 
         saveBtn.setOnClickListener {
             when (function) {
@@ -133,10 +139,53 @@ class DetailActivity : AppCompatActivity() {
             }
         })
 
+        viewModel.deleteResponseLiveData.observe(this, { result ->
+            val response = result.getOrNull()
+            if (response != null) {
+                Toast.makeText(this, "删除成功", Toast.LENGTH_SHORT).show()
+                backAndUpdate()
+            } else {
+                Toast.makeText(this, "提交失败，请检查网络！", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        viewModel.solveResponseLiveData.observe(this, { result ->
+            val response = result.getOrNull()
+            if (response != null) {
+                solveBtn.visibility = View.GONE
+                Toast.makeText(this, "问题已解决！", Toast.LENGTH_SHORT).show()
+                backAndUpdate()
+            } else {
+                Toast.makeText(this, "提交失败，请检查网络！", Toast.LENGTH_SHORT).show()
+            }
+        })
+
         updateBtn.setOnClickListener {
             setClickable(true)
             updateBtn.visibility = View.GONE
             saveBtn.visibility = View.VISIBLE
+        }
+
+        deleteBtn.setOnClickListener {
+            AlertDialog.Builder(this)
+                .setTitle("警告")
+                .setMessage("确定要删除吗")
+                .setPositiveButton("确认") { dialogInterface, i ->
+                    viewModel.deleteDevice(deviceId)
+                }.setNegativeButton("取消") { dialogInterface, i -> }
+                .show()
+        }
+
+        backDetailBtn.setOnClickListener {
+            backAndUpdate()
+        }
+
+        contactNumberView.setOnLongClickListener {
+            val intent = Intent(Intent.ACTION_DIAL)
+            val phone = contactNumberEdit.text.toString()
+            intent.data = Uri.parse("tel:$phone")
+            startActivity(intent)
+            true
         }
     }
 
@@ -147,7 +196,8 @@ class DetailActivity : AppCompatActivity() {
         val areaId = areaFrag.areaId
         val userName = userNameEdit.text.toString()
         val productionDateText = productionDateEdit.text
-        val dataList = productionDateText.split("-")
+        var dataList = productionDateText.split("-")
+        if (dataList[0].isEmpty()) dataList = listOf("1970", "1", "1")
         val productionDate = GregorianCalendar(
             dataList[0].toInt(),
             dataList[1].toInt() - 1,
@@ -176,6 +226,12 @@ class DetailActivity : AppCompatActivity() {
         agentNameEdit.isEnabled = able
         tireBrandEdit.isEnabled = able
         productionDateEdit.isEnabled = able
+        contactNumberView.visibility = if (able) View.GONE else View.VISIBLE
         areaChoiceView.visibility = if (able) View.GONE else View.VISIBLE
+    }
+
+    private fun backAndUpdate() {
+        ABSIntelligentCloudApplication.needUpdate = true
+        finish()
     }
 }
