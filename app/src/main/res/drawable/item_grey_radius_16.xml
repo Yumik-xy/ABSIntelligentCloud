@@ -1,0 +1,16 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="false">
+        <shape>
+            <corners android:radius="16dp" />
+            <stroke android:width="0dp" android:color="@color/background" />
+            <solid android:color="@color/bottom_gray_disable" />
+        </shape>
+    </item>
+    <item android:state_enabled="true">
+        <shape>
+            <corners android:radius="16dp" />
+            <stroke android:width="0dp" android:color="@color/background" />
+            <solid android:color="@color/bottom_gray" />
+        </shape>
+    </item>
+</selector>

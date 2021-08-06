@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/item_white_radius_16"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/dimen_32">
+
+    <pl.droidsonroids.gif.GifImageView
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        android:src="@drawable/loading"
+        android:tint="@color/background_grey"
+        android:tintMode="multiply" />
+
+    <TextView
+        android:id="@+id/loadingText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="网络请求中……"
+        android:textColor="@color/text_2"
+        android:textSize="@dimen/text_14"
+        android:textStyle="bold" />
+
+</LinearLayout>

@@ -1,4 +1,10 @@
 <resources>
-    <string name="app_name">ABSCloud</string>
-    <string name="title_activity_index">MainActivity</string>
+    <string name="app_name">ABS智能云</string>
+    <string name="首页">首页</string>
+    <string name="设备">设备</string>
+    <string name="历史">历史</string>
+    <string name="我的">我的</string>
+    <string name="用户协议条款"><u>《用户协议条款》</u></string>
+    <string name="筛选" />
+    <string name="设备信息">设备信息</string>
 </resources>

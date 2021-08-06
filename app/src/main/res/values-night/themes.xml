@@ -1,0 +1,27 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.ABSIntelligentCloud" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primary</item>
+        <item name="colorOnPrimary">@color/background</item>
+
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">@color/white</item>
+        <!-- Customize your theme here. -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <!--默认的光标、选中的RadioButton颜色-->
+        <item name="colorAccent">@color/primary</item>
+        <!-- 避免控件会顶到状态栏上 有BUG-->
+<!--        <item name="android:fitsSystemWindows">true</item>-->
+        <!-- snackBar 样式 -->
+        <item name="snackbarStyle">@style/Widget.MaterialComponents.Snackbar</item>
+
+        <!-- 动画样式 -->
+<!--        <item name="android:windowAnimationStyle">@style/anim_fade</item>-->
+
+
+    </style>
+</resources>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.yumik.absintelligentcloud.ui.home.HomeFragment"
+        android:label="@string/首页"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_equipment"
+            app:destination="@id/navigation_equipment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_equipment"
+        android:name="com.yumik.absintelligentcloud.ui.equipment.EquipmentFragment"
+        android:label="@string/设备"
+        tools:layout="@layout/fragment_equipment" >
+        <action
+            android:id="@+id/action_navigation_equipment_to_navigation_history"
+            app:destination="@id/navigation_history" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_history"
+        android:name="com.yumik.absintelligentcloud.ui.history.HistoryFragment"
+        android:label="@string/历史"
+        tools:layout="@layout/fragment_history">
+        <action
+            android:id="@+id/action_navigation_history_to_navigation_mine"
+            app:destination="@id/navigation_mine" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_mine"
+        android:name="com.yumik.absintelligentcloud.ui.mine.MineFragment"
+        android:label="@string/我的"
+        tools:layout="@layout/fragment_mine"/>
+
+</navigation>

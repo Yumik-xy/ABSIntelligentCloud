@@ -1,0 +1,637 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.filter.FilterActivity">
+
+    <com.yumik.statusbar.StatusBar
+        android:id="@+id/statusBar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:elevation="2dp"
+        app:backButtonShow="true"
+        app:functionButtonShow="false"
+        app:title="@string/筛选" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dimen_16"
+        android:layout_marginTop="@dimen/dimen_16"
+        android:layout_marginEnd="@dimen/dimen_16"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_8"
+            android:layout_weight="1"
+            android:text="筛选"
+            android:textColor="@color/text_1"
+            android:textSize="@dimen/text_18"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/reset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_8"
+            android:background="?android:selectableItemBackgroundBorderless"
+            android:text="清除"
+            android:textColor="@color/primary"
+            android:textSize="@dimen/text_14" />
+
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:overScrollMode="never">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/areaLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimen_16"
+                    android:layout_marginTop="@dimen/dimen_16"
+                    android:layout_marginEnd="@dimen/dimen_16"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:layout_width="@dimen/dimen_4"
+                        android:layout_height="@dimen/dimen_16"
+                        android:background="@drawable/item_primary_radius_2" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dimen_8"
+                        android:text="区域"
+                        android:textColor="@color/text_1"
+                        android:textSize="@dimen/text_14" />
+
+                </LinearLayout>
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/areaFilterChipGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimen_16"
+                    android:layout_marginTop="@dimen/dimen_8"
+                    android:layout_marginEnd="@dimen/dimen_16"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/allAreaFilterChip"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:tag=""
+                        android:text="全部"
+                        app:chipEndPadding="@dimen/dimen_16"
+                        app:chipStartPadding="@dimen/dimen_16" />
+
+                </com.google.android.material.chip.ChipGroup>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/deviceLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimen_16"
+                    android:layout_marginTop="@dimen/dimen_16"
+                    android:layout_marginEnd="@dimen/dimen_16"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:layout_width="@dimen/dimen_4"
+                        android:layout_height="@dimen/dimen_16"
+                        android:background="@drawable/item_primary_radius_2" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dimen_8"
+                        android:text="设备"
+                        android:textColor="@color/text_1"
+                        android:textSize="@dimen/text_14" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimen_16"
+                    android:layout_marginTop="@dimen/dimen_16"
+                    android:layout_marginEnd="@dimen/dimen_16"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="@dimen/dimen_4"
+                        android:src="@drawable/ic_filter_abs_type"
+                        app:tint="@color/text_2" />
+
+                    <EditText
+                        android:id="@+id/filterAbsType"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dimen_8"
+                        android:layout_weight="1"
+                        android:background="@drawable/item_primary_edit_bottom_line"
+                        android:hint="设备类型"
+                        android:imeOptions="actionNext"
+                        android:inputType="text"
+                        android:textColor="@color/text_1"
+                        android:textColorHint="@color/text_2"
+                        android:textCursorDrawable="@drawable/item_text_cursor_primary"
+                        android:textSize="@dimen/text_14" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimen_16"
+                    android:layout_marginTop="@dimen/dimen_16"
+                    android:layout_marginEnd="@dimen/dimen_16"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="@dimen/dimen_4"
+                        android:src="@drawable/ic_filter_device_id"
+                        app:tint="@color/text_2" />
+
+                    <EditText
+                        android:id="@+id/filterDeviceId"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dimen_8"
+                        android:layout_weight="1"
+                        android:background="@drawable/item_primary_edit_bottom_line"
+                        android:hint="设备编号"
+                        android:imeOptions="actionNext"
+                        android:inputType="text"
+                        android:textColor="@color/text_1"
+                        android:textColorHint="@color/text_2"
+                        android:textCursorDrawable="@drawable/item_text_cursor_primary"
+                        android:textSize="@dimen/text_14" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimen_16"
+                    android:layout_marginTop="@dimen/dimen_16"
+                    android:layout_marginEnd="@dimen/dimen_16"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="@dimen/dimen_4"
+                        android:src="@drawable/ic_filter_user_name"
+                        app:tint="@color/text_2" />
+
+                    <EditText
+                        android:id="@+id/filterUserName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dimen_8"
+                        android:layout_weight="1"
+                        android:background="@drawable/item_primary_edit_bottom_line"
+                        android:hint="司机姓名"
+                        android:imeOptions="actionNext"
+                        android:inputType="text"
+                        android:textColor="@color/text_1"
+                        android:textColorHint="@color/text_2"
+                        android:textCursorDrawable="@drawable/item_text_cursor_primary"
+                        android:textSize="@dimen/text_14" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimen_16"
+                    android:layout_marginTop="@dimen/dimen_16"
+                    android:layout_marginEnd="@dimen/dimen_16"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="@dimen/dimen_4"
+                        android:src="@drawable/ic_filter_contact_number"
+                        app:tint="@color/text_2" />
+
+                    <EditText
+                        android:id="@+id/filterContactNumber"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dimen_8"
+                        android:layout_weight="1"
+                        android:background="@drawable/item_primary_edit_bottom_line"
+                        android:hint="联系电话"
+                        android:imeOptions="actionNext"
+                        android:inputType="phone"
+                        android:textColor="@color/text_1"
+                        android:textColorHint="@color/text_2"
+                        android:textCursorDrawable="@drawable/item_text_cursor_primary"
+                        android:textSize="@dimen/text_14" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimen_16"
+                    android:layout_marginTop="@dimen/dimen_16"
+                    android:layout_marginEnd="@dimen/dimen_16"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="@dimen/dimen_4"
+                        android:src="@drawable/ic_filter_user_name"
+                        app:tint="@color/text_2" />
+
+                    <EditText
+                        android:id="@+id/filterAgentName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dimen_8"
+                        android:layout_weight="1"
+                        android:background="@drawable/item_primary_edit_bottom_line"
+                        android:hint="代理商户"
+                        android:imeOptions="actionNext"
+                        android:inputType="text"
+                        android:textColor="@color/text_1"
+                        android:textColorHint="@color/text_2"
+                        android:textCursorDrawable="@drawable/item_text_cursor_primary"
+                        android:textSize="@dimen/text_14" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimen_16"
+                    android:layout_marginTop="@dimen/dimen_16"
+                    android:layout_marginEnd="@dimen/dimen_16"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="@dimen/dimen_4"
+                        android:src="@drawable/ic_filter_tire_brand"
+                        app:tint="@color/text_2" />
+
+                    <EditText
+                        android:id="@+id/filterTireBrand"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dimen_8"
+                        android:layout_weight="1"
+                        android:background="@drawable/item_primary_edit_bottom_line"
+                        android:hint="轮胎品牌"
+                        android:imeOptions="actionNext"
+                        android:inputType="text"
+                        android:textColor="@color/text_1"
+                        android:textColorHint="@color/text_2"
+                        android:textCursorDrawable="@drawable/item_text_cursor_primary"
+                        android:textSize="@dimen/text_14" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/timeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimen_16"
+                    android:layout_marginTop="@dimen/dimen_16"
+                    android:layout_marginEnd="@dimen/dimen_16"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:layout_width="@dimen/dimen_4"
+                        android:layout_height="@dimen/dimen_16"
+                        android:background="@drawable/item_primary_radius_2" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dimen_8"
+                        android:text="时间"
+                        android:textColor="@color/text_1"
+                        android:textSize="@dimen/text_14" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimen_16"
+                    android:layout_marginTop="@dimen/dimen_16"
+                    android:layout_marginEnd="@dimen/dimen_16"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="@dimen/dimen_4"
+                        android:src="@drawable/ic_filter_time"
+                        app:tint="@color/text_2" />
+
+                    <TextView
+                        android:id="@+id/dateFromFilter"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dimen_8"
+                        android:layout_weight="1"
+                        android:background="@drawable/item_primary_edit_bottom_line"
+                        android:hint="时间从"
+                        android:tag="0"
+                        android:textColor="@color/text_1"
+                        android:textColorHint="@color/text_2"
+                        android:textCursorDrawable="@drawable/item_text_cursor_primary"
+                        android:textSize="@dimen/text_14" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dimen_8"
+                        android:hint="始"
+                        android:textColor="@color/text_1"
+                        android:textColorHint="@color/text_2"
+                        android:textSize="@dimen/text_14" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimen_16"
+                    android:layout_marginTop="@dimen/dimen_16"
+                    android:layout_marginEnd="@dimen/dimen_16"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="@dimen/dimen_4"
+                        android:src="@drawable/ic_filter_time"
+                        app:tint="@color/text_2" />
+
+                    <TextView
+                        android:id="@+id/dateToFilter"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dimen_8"
+                        android:layout_weight="1"
+                        android:background="@drawable/item_primary_edit_bottom_line"
+                        android:hint="时间至"
+                        android:tag="0"
+                        android:textColor="@color/text_1"
+                        android:textColorHint="@color/text_2"
+                        android:textCursorDrawable="@drawable/item_text_cursor_primary"
+                        android:textSize="@dimen/text_14" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dimen_8"
+                        android:hint="至"
+                        android:textColor="@color/text_1"
+                        android:textColorHint="@color/text_2"
+                        android:textSize="@dimen/text_14" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/statusLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimen_16"
+                    android:layout_marginTop="@dimen/dimen_16"
+                    android:layout_marginEnd="@dimen/dimen_16"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:layout_width="@dimen/dimen_4"
+                        android:layout_height="@dimen/dimen_16"
+                        android:background="@drawable/item_primary_radius_2" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dimen_8"
+                        android:text="状态"
+                        android:textColor="@color/text_1"
+                        android:textSize="@dimen/text_14" />
+
+                </LinearLayout>
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/statusFilterChipGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimen_16"
+                    android:layout_marginTop="@dimen/dimen_8"
+                    android:layout_marginEnd="@dimen/dimen_16"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/allStatusFilterChip"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:tag=""
+                        android:text="全部"
+                        app:chipEndPadding="@dimen/dimen_16"
+                        app:chipStartPadding="@dimen/dimen_16" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/enableStatusFilterChip"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:tag="enable"
+                        android:text="启用"
+                        app:chipEndPadding="@dimen/dimen_16"
+                        app:chipStartPadding="@dimen/dimen_16" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/disableStatusFilterChip"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:tag="disable"
+                        android:text="停用"
+                        app:chipEndPadding="@dimen/dimen_16"
+                        app:chipStartPadding="@dimen/dimen_16" />
+
+                </com.google.android.material.chip.ChipGroup>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/faultLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimen_16"
+                    android:layout_marginTop="@dimen/dimen_16"
+                    android:layout_marginEnd="@dimen/dimen_16"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:layout_width="@dimen/dimen_4"
+                        android:layout_height="@dimen/dimen_16"
+                        android:background="@drawable/item_primary_radius_2" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dimen_8"
+                        android:text="故障"
+                        android:textColor="@color/text_1"
+                        android:textSize="@dimen/text_14" />
+
+                </LinearLayout>
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/faultFilterChipGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimen_16"
+                    android:layout_marginTop="@dimen/dimen_8"
+                    android:layout_marginEnd="@dimen/dimen_16"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/allFaultFilterChip"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:tag=""
+                        android:text="全部"
+                        app:chipEndPadding="@dimen/dimen_16"
+                        app:chipStartPadding="@dimen/dimen_16" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/normalFaultFilterChip"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:tag="normal"
+                        android:text="正常"
+                        app:chipEndPadding="@dimen/dimen_16"
+                        app:chipStartPadding="@dimen/dimen_16" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/abnormalFaultFilterChip"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:tag="abnormal"
+                        android:text="异常"
+                        app:chipEndPadding="@dimen/dimen_16"
+                        app:chipStartPadding="@dimen/dimen_16" />
+
+                </com.google.android.material.chip.ChipGroup>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dimen_16"
+        android:layout_marginEnd="@dimen/dimen_16"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/cancel"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_margin="@dimen/dimen_16"
+            android:layout_weight="1"
+            android:background="@drawable/item_grey_ripple_button_16"
+            android:text="取消"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_14"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/confirm"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_margin="@dimen/dimen_16"
+            android:layout_weight="1"
+            android:background="@drawable/item_primary_ripple_button_16"
+            android:text="筛选"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_14"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</LinearLayout>

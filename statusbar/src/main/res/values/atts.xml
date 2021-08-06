@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- https://www.cnblogs.com/stars-one/p/7760936.html -->
+    <declare-styleable name="StatusBar">
+        <attr name="title" format="string"/>
+
+        <attr name="backButtonShow" format="boolean"/>
+        <attr name="backButtonRes" format="reference"/>
+
+        <attr name="functionButtonShow" format="boolean"/>
+        <attr name="functionButtonRes" format="reference"/>
+
+        <attr name="backgroundColor" format="reference|color"/>
+        <attr name="color" format="reference|color"/>
+    </declare-styleable>
+</resources>

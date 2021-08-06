@@ -1,29 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="white">#FFFFFFFF</color>
-    <color name="whiteDarkLittle">#BFFFFFFF</color>
-    <color name="whiteLight">#efefef</color>
-    <color name="whiteDark">#e6e6e6</color>
+    <color name="primary">#1EB580</color>
+    <color name="secondary_yellow">#FF9900</color>
+    <color name="secondary_red">#FF4A34</color>
+    <color name="text_1">#232B35</color>
+    <color name="text_2">#6A737A</color>
+    <color name="text_3">#A7AEB5</color>
+    <color name="white">#FFFFFF</color>
+    <color name="white_dark">#F1F1F1</color>
+    <color name="background">#F9FAFC</color>
 
-    <color name="black">#99404348</color>
-    <color name="blackDarkLittle">#DF404348</color>
-    <color name="blackDark">#99000000</color>
-    <color name="blackLight">#9F9FA0</color>
+    <color name="text_grey">#979797</color>
+    <color name="background_grey">#F1F1F1</color>
 
-    <color name="green">#26ce9a</color>
-    <color name="greenDark">#3C9B7E</color>
-    <color name="greenLight">#5AE7BC</color>
+    <color name="primary_p20">#331EB580</color>
+    <color name="primary_p10">#1A1EB580</color>
+    <color name="primary_disable">#801EB580</color>
 
-    <color name="red">#fe7271</color>
-    <color name="redDark">#BF6F6F</color>
-    <color name="redLight">#FF9595</color>
+    <color name="secondary_yellow_p20">#33FF9900</color>
+    <color name="secondary_yellow_p10">#1AFF9900</color>
+    <color name="secondary_yellow_disable">#80FF9900</color>
 
-    <color name="yellow">#ffb727</color>
-    <color name="yellowDark">#BFAA46</color>
-    <color name="yellowLight">#FFE35D</color>
+    <color name="secondary_red_p20">#33FF4A34</color>
+    <color name="secondary_red_p10">#1AFF4A34</color>
+    <color name="secondary_red_disable">#80FF4A34</color>
 
-    <color name="blue">#37d2e6</color>
-    <color name="blueDark">#4AA0AD</color>
-    <color name="blueLight">#68E2F3</color>
+    <color name="bottom_gray">#BDBEBE</color>
+    <color name="bottom_gray_disable">#4DBDBEBE</color>
+    <color name="text_grey_p5">#0DA7AEB5</color>
+
+    <color name="ripple">#EAEBED</color>
+    <color name="transparent">#00FFFFFF</color>
+
+<!--    <color name="primary_start_progress">#E58A00</color>-->
+<!--    <color name="primary_end_progress">#FF9800</color>-->
+
+    <color name="primary_start_progress">#1A9C6E</color>
+    <color name="primary_end_progress">#22CF92</color>
 
 </resources>
