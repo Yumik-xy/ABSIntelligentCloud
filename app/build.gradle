@@ -4,15 +4,9 @@ plugins {
     id 'kotlin-kapt'
 }
 
+apply from: 'common.gradle'
+
 android {
-    signingConfigs {
-        release {
-            storeFile file('E:\\hxy\\android_app\\ABSIntelligentCloud.jks')
-            storePassword '1q2w3e4r'
-            keyPassword '1q2w3e4r'
-            keyAlias 'absintelligentcloud'
-        }
-    }
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
@@ -20,19 +14,19 @@ android {
         applicationId "com.yumik.absintelligentcloud"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        versionCode getVersionC()
+        versionName getVersionN()
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "ABS智能云_" + defaultConfig.versionName + ".apk"
         }
     }
+
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
