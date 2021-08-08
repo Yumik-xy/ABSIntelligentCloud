@@ -17,8 +17,12 @@ import com.yumik.absintelligentcloud.util.setOnUnShakeClickListener
 import java.io.File
 import kotlin.math.ceil
 
-class DownloadDialog(private val mContext: Context, private val url: String, private val md5: String, private val token: String) :
-    DialogFragment() {
+class DownloadDialog(
+    private val mContext: Context,
+    private val url: String,
+    private val md5: String,
+    private val token: String
+) : DialogFragment() {
 
     companion object {
         private const val TAG = "DownloadDialog"
@@ -33,6 +37,7 @@ class DownloadDialog(private val mContext: Context, private val url: String, pri
     private lateinit var dialog: AlertDialog
     private lateinit var binding: DialogDownloadBinding
     private lateinit var downloadUtil: DownloadUtil
+    private lateinit var downloadListener: DownloadUtil.DownloadListener
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         Log.d(TAG, "onCreateDialog")
@@ -45,85 +50,124 @@ class DownloadDialog(private val mContext: Context, private val url: String, pri
             }
             .create()
 
-        download()
+        initDownload()
+
+        binding.cancelButton.setOnUnShakeClickListener {
+            downloadUtil.cancelCall()
+            dismiss()
+        }
+
+        binding.confirmButton.setOnUnShakeClickListener {
+            if (binding.confirmButton.text == "更新" || binding.confirmButton.text == "重新更新") {
+                binding.confirmButton.isEnabled = false
+                downloadUtil.download(url, token, filePath, downloadListener)
+            } else if (binding.confirmButton.text == "安装") {
+                installApp(filePath)
+            }
+        }
 
         return dialog
     }
 
-    private fun download() {
+    private fun initDownload() {
         downloadUtil = DownloadUtil()
         File(filePath).also { file ->
             if (file.exists()) {
                 if (DownloadUtil().getFileMD5(file) == md5) {
-                    DownloadUtil().installApp(
-                        mContext,
-                        "com.yumik.absintelligentcloud.fileProvider",
-                        filePath
-                    )
-                    dismiss()
-                    return // 如果安装文件存在且md5相等，则结束
+                    binding.confirmButton.isEnabled = true
+                    binding.confirmButton.text = "安装"
+                    binding.message.text = "下载完成"
+                    binding.progress.progress = 100
+                    binding.progressTV.text = "100%"
+                    return // 如果安装文件存在且md5相等，则不下载
                 }
             }
         }
 
-        downloadUtil.download(
-            url,
-            token,
-            filePath,
-            object : DownloadUtil.DownloadListener {
-                override fun onStart() {
-                    requireActivity().runOnUiThread {
-                        binding.message.text = "正在开始下载"
-                    }
+        downloadListener = object : DownloadUtil.DownloadListener {
+            override fun onStart() {
+                requireActivity().runOnUiThread {
+                    binding.confirmButton.text = "正在下载"
+                    binding.message.text = "下载中..."
                 }
+            }
 
-                override fun onProgress(
-                    currentLength: Long,
-                    totalLength: Long,
-                    currentSpeed: Float
-                ) {
-                    requireActivity().runOnUiThread {
-                        val progress = ceil(currentLength * 100.0 / totalLength)
-                        binding.progress.progress = progress.toInt()
-                        binding.progressTV.text = progress.toInt().toString() + "%"
-                        binding.message.text =
-                            "${currentSpeed.sizeFormat()} - ${currentLength.sizeFormat()}/${totalLength.sizeFormat()}"
-                    }
+            override fun onProgress(
+                currentLength: Long,
+                totalLength: Long,
+                currentSpeed: Float
+            ) {
+                requireActivity().runOnUiThread {
+                    val progress = ceil(currentLength * 100.0 / totalLength)
+                    binding.progress.progress = progress.toInt()
+                    binding.progressTV.text = progress.toInt().toString() + "%"
+                    binding.speed.text = currentSpeed.sizeFormat()
                 }
+            }
 
-                override fun onFinish(path: String) {
-                    requireActivity().runOnUiThread {
-                        binding.message.text = "下载完成"
-                        binding.progress.progress = 100
-                        binding.progressTV.text = "100%"
-                    }
-                    Thread {
-                        File(path).also { file ->
-                            if (file.exists()) {
-                                if (DownloadUtil().getFileMD5(file) == md5) {
-                                    filePath = path
-                                    DownloadUtil().installApp(
-                                        mContext,
-                                        "com.yumik.absintelligentcloud.fileProvider",
-                                        path
-                                    )
-                                } else {
-                                    "安装包校验失败，请重新下载".showToast(mContext)
-                                    file.delete()
-                                }
-                            }
+            override fun onFinish(path: String) {
+                requireActivity().runOnUiThread {
+                    binding.message.text = "下载完成"
+                    binding.progress.progress = 100
+                    binding.progressTV.text = "100%"
+                    binding.confirmButton.text = "安装"
+                    binding.confirmButton.isEnabled = true
+                }
+                installApp(path)
+            }
+
+            override fun onFail(errorInfo: String?) {
+                requireActivity().runOnUiThread {
+                    binding.message.text = "$errorInfo"
+                    binding.confirmButton.text = "重新更新"
+                    binding.confirmButton.isEnabled = true
+                }
+                Thread {
+                    File(filePath).also { file ->
+                        if (file.exists()) {
+                            file.delete()
                         }
-                        dismiss()
-                    }.start()
-                }
+                    }
+                }.start()
+            }
+        }
+    }
 
-                override fun onFail(errorInfo: String?) {
+    private fun installApp(path: String) {
+        Thread {
+            File(path).also { file ->
+                if (file.exists()) {
+                    if (DownloadUtil().getFileMD5(file) == md5) {
+                        filePath = path
+                        DownloadUtil().installApp(
+                            mContext,
+                            "com.yumik.absintelligentcloud.fileProvider",
+                            path
+                        )
+                    } else {
+                        file.delete()
+                        requireActivity().runOnUiThread {
+                            "安装包校验失败，请重新下载".showToast(requireContext())
+                            binding.message.text = "等待中..."
+                            binding.confirmButton.text = "重新更新"
+                            binding.confirmButton.isEnabled = true
+                            binding.progress.progress = 0
+                            binding.progressTV.text = "0%"
+                        }
+                    }
+                } else {
+                    file.delete()
                     requireActivity().runOnUiThread {
-                        binding.message.text = "$errorInfo"
+                        "文件不存在，请重新下载".showToast(requireContext())
+                        binding.message.text = "等待中..."
+                        binding.confirmButton.text = "重新更新"
+                        binding.confirmButton.isEnabled = true
+                        binding.progress.progress = 0
+                        binding.progressTV.text = "0%"
                     }
                 }
             }
-        )
+        }.start()
     }
 
     private fun Long.sizeFormat(): String {
