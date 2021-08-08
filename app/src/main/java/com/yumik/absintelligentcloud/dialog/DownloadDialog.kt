@@ -82,6 +82,7 @@ class DownloadDialog(
                             binding.progress.progress = 100
                             binding.progressTV.text = "100%"
                         }
+                        return@Thread
                     }
                 }
                 activity?.runOnUiThread {
