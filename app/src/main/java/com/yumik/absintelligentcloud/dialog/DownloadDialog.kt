@@ -71,22 +71,42 @@ class DownloadDialog(
 
     private fun initDownload() {
         downloadUtil = DownloadUtil()
-        File(filePath).also { file ->
-            if (file.exists()) {
-                if (DownloadUtil().getFileMD5(file) == md5) {
+        Thread {
+            File(filePath).also { file ->
+                if (file.exists()) {
+                    if (DownloadUtil().getFileMD5(file) == md5) {
+                        activity?.runOnUiThread {
+                            binding.confirmButton.isEnabled = true
+                            binding.confirmButton.text = "安装"
+                            binding.message.text = "下载完成"
+                            binding.progress.progress = 100
+                            binding.progressTV.text = "100%"
+                        }
+                    }
+                }
+                activity?.runOnUiThread {
                     binding.confirmButton.isEnabled = true
-                    binding.confirmButton.text = "安装"
-                    binding.message.text = "下载完成"
-                    binding.progress.progress = 100
-                    binding.progressTV.text = "100%"
-                    return // 如果安装文件存在且md5相等，则不下载
+                    binding.confirmButton.text = "更新"
                 }
             }
-        }
+        }.start()
+//
+//        File(filePath).also { file ->
+//            if (file.exists()) {
+//                if (DownloadUtil().getFileMD5(file) == md5) {
+//                    binding.confirmButton.isEnabled = true
+//                    binding.confirmButton.text = "安装"
+//                    binding.message.text = "下载完成"
+//                    binding.progress.progress = 100
+//                    binding.progressTV.text = "100%"
+//                    return // 如果安装文件存在且md5相等，则不下载
+//                }
+//            }
+//        }
 
         downloadListener = object : DownloadUtil.DownloadListener {
             override fun onStart() {
-                requireActivity().runOnUiThread {
+                activity?.runOnUiThread {
                     binding.confirmButton.text = "正在下载"
                     binding.message.text = "下载中..."
                 }
@@ -97,7 +117,7 @@ class DownloadDialog(
                 totalLength: Long,
                 currentSpeed: Float
             ) {
-                requireActivity().runOnUiThread {
+                activity?.runOnUiThread {
                     val progress = ceil(currentLength * 100.0 / totalLength)
                     binding.progress.progress = progress.toInt()
                     binding.progressTV.text = progress.toInt().toString() + "%"
@@ -106,7 +126,7 @@ class DownloadDialog(
             }
 
             override fun onFinish(path: String) {
-                requireActivity().runOnUiThread {
+                activity?.runOnUiThread {
                     binding.message.text = "下载完成"
                     binding.progress.progress = 100
                     binding.progressTV.text = "100%"
@@ -117,7 +137,7 @@ class DownloadDialog(
             }
 
             override fun onFail(errorInfo: String?) {
-                requireActivity().runOnUiThread {
+                activity?.runOnUiThread {
                     binding.message.text = "$errorInfo"
                     binding.confirmButton.text = "重新更新"
                     binding.confirmButton.isEnabled = true
@@ -146,7 +166,7 @@ class DownloadDialog(
                         )
                     } else {
                         file.delete()
-                        requireActivity().runOnUiThread {
+                        activity?.runOnUiThread {
                             "安装包校验失败，请重新下载".showToast(requireContext())
                             binding.message.text = "等待中..."
                             binding.confirmButton.text = "重新更新"
@@ -157,7 +177,7 @@ class DownloadDialog(
                     }
                 } else {
                     file.delete()
-                    requireActivity().runOnUiThread {
+                    activity?.runOnUiThread {
                         "文件不存在，请重新下载".showToast(requireContext())
                         binding.message.text = "等待中..."
                         binding.confirmButton.text = "重新更新"

@@ -47,7 +47,10 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="8dp"
-        android:layout_margin="@dimen/dimen_16"
+        android:layout_marginStart="@dimen/dimen_16"
+        android:layout_marginTop="@dimen/dimen_16"
+        android:layout_marginEnd="@dimen/dimen_16"
+        android:layout_marginBottom="@dimen/dimen_8"
         android:progress="0"
         android:progressDrawable="@drawable/progress_bar_color" />
 
@@ -88,7 +91,7 @@
             android:layout_height="wrap_content"
             android:text="0%"
             android:textColor="@color/text_2"
-            android:textSize="@dimen/text_14" />
+            android:textSize="@dimen/text_12" />
 
     </LinearLayout>
 
@@ -115,8 +118,8 @@
             android:layout_height="36dp"
             android:layout_margin="@dimen/dimen_16"
             android:background="@drawable/item_primary_ripple_button_16"
-            android:enabled="true"
-            android:text="更新"
+            android:enabled="false"
+            android:text="请求中"
             android:textColor="@color/background"
             android:textSize="@dimen/text_14" />
 
