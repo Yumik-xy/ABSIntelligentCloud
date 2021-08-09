@@ -46,7 +46,7 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_arrow_up"
+                    android:src="@drawable/ic_check"
                     app:tint="@color/text_2" />
 
                 <TextView
@@ -60,13 +60,22 @@
                     android:textColor="@color/text_2"
                     android:textSize="@dimen/text_14" />
 
+                <View
+                    android:id="@+id/versionBadge"
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/shape_oval_secondary_red"
+                    android:visibility="gone" />
+
                 <TextView
                     android:id="@+id/versionName"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginEnd="8dp"
                     android:gravity="center_vertical"
-                    android:text="1.0.0"
+                    android:text="1.0.0_00000000"
                     android:textColor="@color/text_3"
                     android:textSize="@dimen/text_12" />
 

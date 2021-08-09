@@ -58,6 +58,8 @@ object Repository {
         Network.getHistoryList(historyListBody, token)
     }
 
+    fun checkUpdate() = fire(Dispatchers.IO) { Network.checkUpdate() }
+
     private fun <T> fire(context: CoroutineContext, block: suspend () -> BaseResponse<T>) =
         liveData(context) {
             val result = try {

@@ -23,6 +23,7 @@ import com.yumik.absintelligentcloud.dialog.DownloadDialog
 import com.yumik.absintelligentcloud.util.TipsUtil.showMySnackbar
 import com.yumik.absintelligentcloud.dialog.UpdatePasswordDialog
 import com.yumik.absintelligentcloud.util.ApkVersionCodeUtils.getVerName
+import com.yumik.absintelligentcloud.util.ApkVersionCodeUtils.getVersionCode
 import com.yumik.absintelligentcloud.util.setOnUnShakeClickListener
 
 class MineFragment : Fragment() {
@@ -57,7 +58,7 @@ class MineFragment : Fragment() {
         mainActivity = activity as MainActivity
 
         // 初始化监听
-        initBroadcast()
+        // initBroadcast()
 
         // 处理viewModel回调
         initViewModel()
@@ -70,25 +71,25 @@ class MineFragment : Fragment() {
 
         broadcastReceiver = PackageAddedReceiver()
 
-//        broadcastReceiver = object : BroadcastReceiver() {
-//            override fun onReceive(context: Context?, intent: Intent?) {
-//                Log.d(TAG, intent.toString())
-//                when (intent?.action) {
-//                    Intent.ACTION_PACKAGE_ADDED -> {
-//                        val packageName = intent.data?.schemeSpecificPart
-//                        "安装成功$packageName".showToast(requireContext())
-//                    }
-//                    Intent.ACTION_PACKAGE_REMOVED -> {
-//                        val packageName = intent.data?.schemeSpecificPart
-//                        "卸载成功$packageName".showToast(requireContext())
-//                    }
-//                    Intent.ACTION_PACKAGE_REPLACED -> {
-//                        val packageName = intent.data?.schemeSpecificPart
-//                        "替换成功$packageName".showToast(requireContext())
-//                    }
-//                }
-//            }
-//        }
+        // broadcastReceiver = object : BroadcastReceiver() {
+        //     override fun onReceive(context: Context?, intent: Intent?) {
+        //         Log.d(TAG, intent.toString())
+        //         when (intent?.action) {
+        //             Intent.ACTION_PACKAGE_ADDED -> {
+        //                 val packageName = intent.data?.schemeSpecificPart
+        //                 "安装成功$packageName".showToast(requireContext())
+        //             }
+        //             Intent.ACTION_PACKAGE_REMOVED -> {
+        //                 val packageName = intent.data?.schemeSpecificPart
+        //                 "卸载成功$packageName".showToast(requireContext())
+        //             }
+        //             Intent.ACTION_PACKAGE_REPLACED -> {
+        //                 val packageName = intent.data?.schemeSpecificPart
+        //                 "替换成功$packageName".showToast(requireContext())
+        //             }
+        //         }
+        //     }
+        // }
 
         val intentFilter = IntentFilter().apply {
             addAction(Intent.ACTION_PACKAGE_ADDED)
@@ -107,7 +108,7 @@ class MineFragment : Fragment() {
 
     private fun initViewModel() {
         viewModel.updatePasswordLiveData.observe(viewLifecycleOwner, {
-            (activity as MainActivity).dialog.dismissDialog()
+            mainActivity.dialog.dismissDialog()
             val result = it.getOrNull()
             if (result != null) {
                 updatePasswordDialog?.dismissDialog()
@@ -131,18 +132,38 @@ class MineFragment : Fragment() {
                 }
             }
         })
+
+        viewModel.versionName.observe(viewLifecycleOwner, {
+            binding.versionName.text = it
+        })
+
+        viewModel.checkUpdateLiveData.observe(viewLifecycleOwner, {
+            val result = it.getOrNull()
+            if (result != null) {
+                val data = result.data
+                if (getVersionCode(requireContext()) < data.versionCode) {
+                    binding.versionBadge.visibility = View.VISIBLE
+                } else {
+                    binding.versionBadge.visibility = View.GONE
+                }
+            }
+        })
     }
 
     private fun initView() {
-        binding.versionName.text = getVerName(requireContext())
+        viewModel.checkUpdate() // 只请求一次更新就好了，不是频繁更新没必要轮询
         binding.checkNew.setOnUnShakeClickListener {
-            val downloadDialog = DownloadDialog(
-                requireContext(),
-                "iBiliPlayer-bili.apk?t=1628079808000",
-                "3158228ba1c9b3562da5e027a4ff321d",
-                mainActivity.accessToken
-            )
-            downloadDialog.show(parentFragmentManager, "downloadDialog")
+            if (binding.versionBadge.visibility == View.VISIBLE) {
+                val downloadDialog = DownloadDialog(
+                    requireContext(),
+                    "iBiliPlayer-bili.apk?t=1628079808000",
+                    "3158228ba1c9b3562da5e027a4ff321d",
+                    mainActivity.accessToken
+                )
+                downloadDialog.show(parentFragmentManager, "downloadDialog")
+            } else {
+                binding.container.showMySnackbar("现在已经是最新版本了！")
+            }
         }
 
         binding.changePassword.setOnUnShakeClickListener {

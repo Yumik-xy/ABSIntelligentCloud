@@ -1,6 +1,7 @@
 package com.yumik.absintelligentcloud.logic.network
 
 import android.util.Log
+import com.yumik.absintelligentcloud.logic.network.Network.await
 import com.yumik.absintelligentcloud.logic.network.body.*
 import com.yumik.absintelligentcloud.logic.network.service.*
 import retrofit2.Call
@@ -54,6 +55,10 @@ object Network {
 
     suspend fun getHistoryList(historyListBody: HistoryListBody, token: String) =
         deviceService.getHistoryList(historyListBody, token).await()
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    private val downloadService = ServiceCreator.create(DownloadService::class.java)
+    suspend fun checkUpdate() = downloadService.checkUpdate().await()
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 

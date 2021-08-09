@@ -39,6 +39,6 @@ gradle.allprojects {
 
     ext.getVersionN = {
         // <APP名称><主版本号>.<子版本号><SVN最后提交数>
-        return major + "." + minor + "_" + getVersionC() + "_" + getGitHeadRefsSuffix()
+        return major + "." + minor + "." + getVersionC() + "_" + getGitHeadRefsSuffix()
     }
 }
