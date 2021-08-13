@@ -15,8 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
-import com.yumik.absintelligentcloud.Application.Companion.BROAD_ADD_DEVICE
-import com.yumik.absintelligentcloud.Application.Companion.BROAD_SEARCH_DEVICE
+import com.yumik.absintelligentcloud.Application
 import com.yumik.absintelligentcloud.MainActivity
 import com.yumik.absintelligentcloud.R
 import com.yumik.absintelligentcloud.databinding.FragmentEquipmentBinding
@@ -99,18 +98,18 @@ class EquipmentFragment : Fragment() {
         broadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 when (intent?.action) {
-                    BROAD_ADD_DEVICE -> {
+                    Application.BROAD_ADD_DEVICE -> {
                         addDevice()
                     }
-                    BROAD_SEARCH_DEVICE -> {
+                    Application.BROAD_SEARCH_DEVICE -> {
                         filterDevice()
                     }
                 }
             }
         }
         val intentFilter = IntentFilter().apply {
-            addAction(BROAD_ADD_DEVICE)
-            addAction(BROAD_SEARCH_DEVICE)
+            addAction(Application.BROAD_ADD_DEVICE)
+            addAction(Application.BROAD_SEARCH_DEVICE)
         }
 
         LocalBroadcastManager.getInstance(requireContext())

@@ -1,10 +1,14 @@
 package com.yumik.absintelligentcloud
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.view.View
 import android.view.Window
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -13,6 +17,7 @@ import com.yumik.absintelligentcloud.ui.login.LoginActivity
 import com.yumik.absintelligentcloud.ui.BaseActivity
 import com.yumik.absintelligentcloud.ui.equipment.EquipmentFragment
 import com.yumik.absintelligentcloud.dialog.LoadingDialog
+import com.yumik.absintelligentcloud.ui.device.DeviceActivity
 import com.yumik.absintelligentcloud.util.SPUtil
 
 
@@ -24,6 +29,11 @@ class MainActivity : BaseActivity() {
 
     var accessToken by SPUtil(this, "accessToken", "")
     var areaId by SPUtil(this, "fixedAreaId", "")
+
+    private lateinit var broadcastReceiver: BroadcastReceiver
+
+    // 销毁前做的事情
+    private val needDoList = mutableListOf<() -> Unit>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +58,8 @@ class MainActivity : BaseActivity() {
 
         // 检查登录状态 ThemeOverlay_MaterialComponents_MaterialAlertDialog_FullWidthButtons
         checkLogin()
+
+        initBroadcast()
     }
 
     // Activity Results API
@@ -72,8 +84,38 @@ class MainActivity : BaseActivity() {
         dialog.dismissDialog()
     }
 
-    fun porcelainSearch() {
-        navController.navigate(R.id.navigation_equipment)
-        EquipmentFragment.newInstance().filterDevice()
+    private fun initBroadcast() {
+        broadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                when (intent?.action) {
+                    Application.BROAD_GET_DEVICE -> {
+                        val intentDeviceActivity =
+                            Intent(context, DeviceActivity::class.java).apply {
+                                putExtra("deviceId", intent.getStringExtra("deviceId"))
+                            }
+                        startActivity(intentDeviceActivity)
+                    }
+                }
+            }
+        }
+        val intentFilter = IntentFilter().apply {
+            addAction(Application.BROAD_GET_DEVICE)
+        }
+
+        LocalBroadcastManager.getInstance(this)
+            .registerReceiver(broadcastReceiver, intentFilter)
+
+        needDoList.add {
+            LocalBroadcastManager.getInstance(this)
+                .unregisterReceiver(broadcastReceiver)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        for (needDoItem in needDoList) {
+            needDoItem()
+        }
+        needDoList.clear()
     }
 }

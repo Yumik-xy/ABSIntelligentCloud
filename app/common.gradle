@@ -2,7 +2,7 @@ gradle.allprojects {
     // 主版本号
     def major = 1
     // 次版本号
-    def minor = 3
+    def minor = 4
 
     ext.getGitHeadRefsSuffix = {
         try {

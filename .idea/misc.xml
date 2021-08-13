@@ -40,17 +40,25 @@
         <entry key="..\:/hxy/android/ABSIntelligentCloud/statusbar/src/main/res/layout-land/status_bar.xml" value="0.16" />
         <entry key="..\:/hxy/android/ABSIntelligentCloud/statusbar/src/main/res/layout-port/status_bar.xml" value="0.19114583333333332" />
         <entry key="..\:/hxy/android/ABSIntelligentCloud/statusbar/src/main/res/layout/status_bar.xml" value="0.19114583333333332" />
+        <entry key="..\:/hxy/githubAndroid/ABSIntelligentCloud/app/src/main/res/drawable/item_porcelain.xml" value="0.28888888888888886" />
+        <entry key="..\:/hxy/githubAndroid/ABSIntelligentCloud/app/src/main/res/drawable/item_ripple_porcelain.xml" value="0.28888888888888886" />
         <entry key="..\:/hxy/githubAndroid/ABSIntelligentCloud/app/src/main/res/drawable/progress_bar_color.xml" value="0.26944444444444443" />
         <entry key="..\:/hxy/githubAndroid/ABSIntelligentCloud/app/src/main/res/drawable/shape_oval_primary.xml" value="0.2638888888888889" />
         <entry key="..\:/hxy/githubAndroid/ABSIntelligentCloud/app/src/main/res/drawable/shape_oval_secondary_red.xml" value="0.2638888888888889" />
+        <entry key="..\:/hxy/githubAndroid/ABSIntelligentCloud/app/src/main/res/layout/activity_main.xml" value="0.34375" />
+        <entry key="..\:/hxy/githubAndroid/ABSIntelligentCloud/app/src/main/res/layout/adapter_device_danger.xml" value="0.34375" />
+        <entry key="..\:/hxy/githubAndroid/ABSIntelligentCloud/app/src/main/res/layout/adapter_history_normal.xml" value="0.34375" />
+        <entry key="..\:/hxy/githubAndroid/ABSIntelligentCloud/app/src/main/res/layout/adapter_procelain.xml" value="0.34375" />
         <entry key="..\:/hxy/githubAndroid/ABSIntelligentCloud/app/src/main/res/layout/badge.xml" value="0.34791666666666665" />
         <entry key="..\:/hxy/githubAndroid/ABSIntelligentCloud/app/src/main/res/layout/badge_without_number.xml" value="0.34791666666666665" />
+        <entry key="..\:/hxy/githubAndroid/ABSIntelligentCloud/app/src/main/res/layout/chip_filter.xml" value="0.34375" />
         <entry key="..\:/hxy/githubAndroid/ABSIntelligentCloud/app/src/main/res/layout/dialog_confirm.xml" value="0.34791666666666665" />
         <entry key="..\:/hxy/githubAndroid/ABSIntelligentCloud/app/src/main/res/layout/dialog_download.xml" value="0.33" />
         <entry key="..\:/hxy/githubAndroid/ABSIntelligentCloud/app/src/main/res/layout/dialog_progress_bar_v.xml" value="0.34791666666666665" />
         <entry key="..\:/hxy/githubAndroid/ABSIntelligentCloud/app/src/main/res/layout/dialog_update_password.xml" value="0.34791666666666665" />
+        <entry key="..\:/hxy/githubAndroid/ABSIntelligentCloud/app/src/main/res/layout/fragment_equipment.xml" value="0.2462962962962963" />
         <entry key="..\:/hxy/githubAndroid/ABSIntelligentCloud/app/src/main/res/layout/fragment_home.xml" value="0.34791666666666665" />
-        <entry key="..\:/hxy/githubAndroid/ABSIntelligentCloud/app/src/main/res/layout/fragment_mine.xml" value="0.22" />
+        <entry key="..\:/hxy/githubAndroid/ABSIntelligentCloud/app/src/main/res/layout/fragment_mine.xml" value="0.2" />
         <entry key="..\:/hxy/githubAndroid/ABSIntelligentCloud/statusbar/src/main/res/layout/status_bar.xml" value="0.34791666666666665" />
       </map>
     </option>
