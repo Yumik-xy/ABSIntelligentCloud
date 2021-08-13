@@ -12,7 +12,7 @@ import retrofit2.http.Url
 
 interface DownloadService {
     @GET("/file/getApk")
-    fun checkUpdate(): Call<BaseResponse<CheckUpdateResponse>>
+    suspend fun checkUpdate(): BaseResponse<CheckUpdateResponse>
 
     @Streaming
     @GET

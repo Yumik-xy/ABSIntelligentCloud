@@ -10,7 +10,7 @@ import retrofit2.http.POST;
 
 interface LoginService {
     @POST("http://82.156.209.212:22222/api/user/login")
-    fun login(
+    suspend fun login(
         @Body data: LoginBody
-    ): Call<BaseResponse<LoginResponse>>
+    ): BaseResponse<LoginResponse>
 }

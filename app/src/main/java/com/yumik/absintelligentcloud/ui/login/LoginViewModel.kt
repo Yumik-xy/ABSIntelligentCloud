@@ -3,18 +3,26 @@ package com.yumik.absintelligentcloud.ui.login
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.yumik.absintelligentcloud.logic.Repository
+import androidx.lifecycle.viewModelScope
+import com.yumik.absintelligentcloud.logic.network.Network
+import com.yumik.absintelligentcloud.logic.network.ServiceCreator
 import com.yumik.absintelligentcloud.logic.network.body.LoginBody
+import com.yumik.absintelligentcloud.logic.network.response.LoginResponse
+import com.yumik.absintelligentcloud.logic.network.service.LoginService
+import kotlinx.coroutines.launch
 
 class LoginViewModel : ViewModel() {
 
     // 登录
-    private val _loginLiveData = MutableLiveData<LoginBody>()
-    val loginLiveData = Transformations.switchMap(_loginLiveData) {
-        Repository.loginNormal(it)
-    }
+    val loginLiveData = Network.StateLiveData<LoginResponse>()
 
     fun login(loginBody: LoginBody) {
-        _loginLiveData.value = loginBody
+        viewModelScope.launch {
+            val res = Network.apiCall {
+                ServiceCreator.create(LoginService::class.java)
+                    .login(loginBody)
+            }
+            loginLiveData.value = res
+        }
     }
 }

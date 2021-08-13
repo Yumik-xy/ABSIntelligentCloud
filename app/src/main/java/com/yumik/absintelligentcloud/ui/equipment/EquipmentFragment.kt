@@ -20,6 +20,7 @@ import com.yumik.absintelligentcloud.MainActivity
 import com.yumik.absintelligentcloud.R
 import com.yumik.absintelligentcloud.databinding.FragmentEquipmentBinding
 import com.yumik.absintelligentcloud.logic.model.FilterHistory
+import com.yumik.absintelligentcloud.logic.network.Network
 import com.yumik.absintelligentcloud.logic.network.body.DeviceListBody
 import com.yumik.absintelligentcloud.logic.network.response.EmptyResponse
 import com.yumik.absintelligentcloud.module.device.DeviceAdapter
@@ -125,27 +126,18 @@ class EquipmentFragment : Fragment() {
         viewModel.deviceList.observe(viewLifecycleOwner, {
             mainActivity.dialog.dismissDialog()
             binding.swipeRefresh.isRefreshing = false
-            val result = it.getOrNull()
-            if (result != null) {
-                val data = result.data
+            if (it.code == Network.ApiException.CODE_SUCCESS && it.data != null) {
+                val data = it.data
                 if (page == 1)
                     deviceListAdapter.reAdd(data.list)
                 else
                     deviceListAdapter.add(data.list)
                 page = min(data.page + 1, data.totalPages)
             } else {
-                try {
-                    it.onFailure { throwable ->
-                        val errorResponse =
-                            Gson().fromJson(throwable.message, EmptyResponse::class.java)
-                        binding.container.showMySnackbar(
-                            errorResponse.message,
-                            R.color.secondary_red
-                        )
-                    }
-                } catch (e: Exception) {
-                    binding.container.showMySnackbar("网络异常！请检查网络连接", R.color.secondary_yellow)
-                }
+                binding.container.showMySnackbar(
+                    it.message,
+                    R.color.secondary_red
+                )
             }
         })
     }

@@ -14,57 +14,57 @@ import retrofit2.http.*
 interface DeviceService {
     // 获取设备详情
     @GET("/api/abs/detail")
-    fun getDeviceInfo(
+    suspend fun getDeviceInfo(
         @Query("deviceId") deviceId: String,
         @Header("Authorization") Authorization: String
-    ): Call<BaseResponse<DeviceInfoResponse>>
+    ): BaseResponse<DeviceInfoResponse>
 
     // 删除数据信息
     @POST("/api/abs/delete")
-    fun deleteDevice(
+    suspend fun deleteDevice(
         @Query("deviceId") deviceId: String,
         @Header("Authorization") Authorization: String
-    ): Call<BaseResponse<Nothing>>
+    ): BaseResponse<Nothing>
 
     // 上传数据信息
     @POST("/api/abs/add")
-    fun addDevice(
+    suspend fun addDevice(
         @Body data: AddDeviceBody,
         @Header("Authorization") Authorization: String
-    ): Call<BaseResponse<Nothing>>
+    ): BaseResponse<Nothing>
 
     // 更新数据信息
     @POST("/api/abs/update")
-    fun updateDevice(
+    suspend fun updateDevice(
         @Body data: AddDeviceBody,
         @Header("Authorization") Authorization: String
-    ): Call<BaseResponse<Nothing>>
+    ): BaseResponse<Nothing>
 
     // 更新故障信息
     @POST("api/abs/status/update")
-    fun updateFaultDevice(
+    suspend fun updateFaultDevice(
         @Query("deviceId") deviceId: String,
         @Header("Authorization") Authorization: String
-    ): Call<BaseResponse<Nothing>>
+    ): BaseResponse<Nothing>
 
     // 获取异常设备列表
     @POST("api/abs/status/pagination")
-    fun getStatusDeviceList(
+    suspend fun getStatusDeviceList(
         @Body data: StatusDeviceListBody,
         @Header("Authorization") Authorization: String
-    ): Call<BaseResponse<DeviceListResponse>>
+    ): BaseResponse<DeviceListResponse>
 
     // 获取所有设备列表
     @POST("api/abs/pagination")
-    fun getDeviceList(
+    suspend fun getDeviceList(
         @Body data: DeviceListBody,
         @Header("Authorization") Authorization: String
-    ): Call<BaseResponse<DeviceListResponse>>
+    ): BaseResponse<DeviceListResponse>
 
     // 获取历史记录
     @POST("api/monitor/pagination")
-    fun getHistoryList(
+    suspend fun getHistoryList(
         @Body data: HistoryListBody,
         @Header("Authorization") Authorization: String
-    ): Call<BaseResponse<HistoryListResponse>>
+    ): BaseResponse<HistoryListResponse>
 }

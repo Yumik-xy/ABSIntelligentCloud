@@ -1,29 +1,20 @@
 package com.yumik.absintelligentcloud.ui.mine
 
-import android.content.BroadcastReceiver
-import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.google.gson.Gson
 import com.yumik.absintelligentcloud.MainActivity
 import com.yumik.absintelligentcloud.R
 import com.yumik.absintelligentcloud.databinding.FragmentMineBinding
-import com.yumik.absintelligentcloud.logic.network.response.EmptyResponse
-import com.yumik.absintelligentcloud.receiver.PackageAddedReceiver
-import com.yumik.absintelligentcloud.ui.filter.FilterActivity
 import com.yumik.absintelligentcloud.dialog.ConfirmDialog
 import com.yumik.absintelligentcloud.dialog.DownloadDialog
-import com.yumik.absintelligentcloud.util.TipsUtil.showMySnackbar
 import com.yumik.absintelligentcloud.dialog.UpdatePasswordDialog
-import com.yumik.absintelligentcloud.util.ApkVersionCodeUtils.getVerName
+import com.yumik.absintelligentcloud.logic.network.Network
 import com.yumik.absintelligentcloud.util.ApkVersionCodeUtils.getVersionCode
+import com.yumik.absintelligentcloud.util.TipsUtil.showMySnackbar
 import com.yumik.absintelligentcloud.util.setOnUnShakeClickListener
 
 class MineFragment : Fragment() {
@@ -38,7 +29,6 @@ class MineFragment : Fragment() {
     private var updatePasswordDialog: UpdatePasswordDialog? = null
 
     private lateinit var viewModel: MineViewModel
-    private lateinit var broadcastReceiver: BroadcastReceiver
     private lateinit var mainActivity: MainActivity
 
     // 销毁前做的事情
@@ -57,9 +47,6 @@ class MineFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(MineViewModel::class.java)
         mainActivity = activity as MainActivity
 
-        // 初始化监听
-        // initBroadcast()
-
         // 处理viewModel回调
         initViewModel()
 
@@ -67,69 +54,17 @@ class MineFragment : Fragment() {
         initView()
     }
 
-    private fun initBroadcast() {
-
-        broadcastReceiver = PackageAddedReceiver()
-
-        // broadcastReceiver = object : BroadcastReceiver() {
-        //     override fun onReceive(context: Context?, intent: Intent?) {
-        //         Log.d(TAG, intent.toString())
-        //         when (intent?.action) {
-        //             Intent.ACTION_PACKAGE_ADDED -> {
-        //                 val packageName = intent.data?.schemeSpecificPart
-        //                 "安装成功$packageName".showToast(requireContext())
-        //             }
-        //             Intent.ACTION_PACKAGE_REMOVED -> {
-        //                 val packageName = intent.data?.schemeSpecificPart
-        //                 "卸载成功$packageName".showToast(requireContext())
-        //             }
-        //             Intent.ACTION_PACKAGE_REPLACED -> {
-        //                 val packageName = intent.data?.schemeSpecificPart
-        //                 "替换成功$packageName".showToast(requireContext())
-        //             }
-        //         }
-        //     }
-        // }
-
-        val intentFilter = IntentFilter().apply {
-            addAction(Intent.ACTION_PACKAGE_ADDED)
-            addAction(Intent.ACTION_PACKAGE_REMOVED)
-            addAction(Intent.ACTION_PACKAGE_REPLACED)
-            addDataScheme("package")
-        }
-
-        LocalBroadcastManager.getInstance(requireContext())
-            .registerReceiver(broadcastReceiver, intentFilter)
-        needDoList.add {
-            LocalBroadcastManager.getInstance(requireContext())
-                .unregisterReceiver(broadcastReceiver)
-        }
-    }
-
     private fun initViewModel() {
         viewModel.updatePasswordLiveData.observe(viewLifecycleOwner, {
             mainActivity.dialog.dismissDialog()
-            val result = it.getOrNull()
-            if (result != null) {
+            if (it.code == Network.ApiException.CODE_SUCCESS) {
                 updatePasswordDialog?.dismissDialog()
-                binding.container.showMySnackbar(result.message)
+                binding.container.showMySnackbar(it.message)
             } else {
-                try {
-                    it.onFailure { throwable ->
-                        Log.d(FilterActivity.TAG, throwable.message.toString())
-                        val errorResponse =
-                            Gson().fromJson(throwable.message, EmptyResponse::class.java)
-                        updatePasswordDialog?.binding?.container?.showMySnackbar(
-                            errorResponse.message,
-                            R.color.secondary_red
-                        )
-                    }
-                } catch (e: Exception) {
-                    updatePasswordDialog?.binding?.container?.showMySnackbar(
-                        "网络异常！请检查网络连接",
-                        R.color.secondary_yellow
-                    )
-                }
+                updatePasswordDialog?.binding?.container?.showMySnackbar(
+                    it.message,
+                    R.color.secondary_red
+                )
             }
         })
 
@@ -138,10 +73,8 @@ class MineFragment : Fragment() {
         })
 
         viewModel.checkUpdateLiveData.observe(viewLifecycleOwner, {
-            val result = it.getOrNull()
-            if (result != null) {
-                val data = result.data
-                if (getVersionCode(requireContext()) < data.versionCode) {
+            if (it.code == Network.ApiException.CODE_SUCCESS && it.data != null) {
+                if (getVersionCode(requireContext()) < it.data.versionCode) {
                     binding.versionBadge.visibility = View.VISIBLE
                 } else {
                     binding.versionBadge.visibility = View.GONE

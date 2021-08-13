@@ -9,8 +9,8 @@ import retrofit2.http.Query
 
 interface UpdatePasswordService {
     @POST("api/password/update")
-    fun updatePassword(
+    suspend fun updatePassword(
         @Query("password") password: String,
         @Header("Authorization") Authorization: String
-    ): Call<BaseResponse<Nothing>>
+    ): BaseResponse<Nothing>
 }

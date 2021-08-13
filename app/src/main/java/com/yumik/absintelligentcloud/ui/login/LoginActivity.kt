@@ -8,14 +8,13 @@ import android.view.View
 import android.view.Window
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.ViewModelProvider
-import com.google.gson.Gson
 import com.yumik.absintelligentcloud.MainActivity
 import com.yumik.absintelligentcloud.R
 import com.yumik.absintelligentcloud.databinding.ActivityLoginBinding
-import com.yumik.absintelligentcloud.logic.network.response.EmptyResponse
+import com.yumik.absintelligentcloud.dialog.LoadingDialog
+import com.yumik.absintelligentcloud.logic.network.Network
 import com.yumik.absintelligentcloud.logic.network.body.LoginBody
 import com.yumik.absintelligentcloud.ui.BaseActivity
-import com.yumik.absintelligentcloud.dialog.LoadingDialog
 import com.yumik.absintelligentcloud.util.Md5Util.getMD5
 import com.yumik.absintelligentcloud.util.SPUtil
 import com.yumik.absintelligentcloud.util.TipsUtil.showMySnackbar
@@ -84,12 +83,11 @@ class LoginActivity : BaseActivity() {
     private fun initViewModel() {
         viewModel.loginLiveData.observe(this, {
             dialog.dismissDialog()
-            val result = it.getOrNull()
-            if (result != null) {
+            if (it.code == Network.ApiException.CODE_SUCCESS && it.data != null) {
                 binding.container.showMySnackbar("登录成功！")
                 Thread {
                     Thread.sleep(1000)
-                    val data = result.data
+                    val data = it.data
                     role = data.role
                     accessToken = data.accessToken
                     val intent = Intent(this, MainActivity::class.java)
@@ -97,19 +95,10 @@ class LoginActivity : BaseActivity() {
                     finish()
                 }.start()
             } else {
-                try {
-                    it.onFailure { throwable ->
-                        val errorResponse =
-                            Gson().fromJson(throwable.message, EmptyResponse::class.java)
-                        binding.container.showMySnackbar(
-                            errorResponse.message,
-                            R.color.secondary_red
-                        )
-                    }
-                    binding.password.text.clear()
-                } catch (e: Exception) {
-                    binding.container.showMySnackbar("网络异常！请检查网络连接", R.color.secondary_yellow)
-                }
+                binding.container.showMySnackbar(
+                    it.message,
+                    R.color.secondary_red
+                )
             }
         })
     }

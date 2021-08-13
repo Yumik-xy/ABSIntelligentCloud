@@ -1,42 +1,47 @@
 package com.yumik.absintelligentcloud.ui.home
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.yumik.absintelligentcloud.MainActivity
-import com.yumik.absintelligentcloud.R
-import com.yumik.absintelligentcloud.logic.Repository
+import androidx.lifecycle.viewModelScope
 import com.yumik.absintelligentcloud.logic.model.Porcelain
+import com.yumik.absintelligentcloud.logic.network.Network
+import com.yumik.absintelligentcloud.logic.network.ServiceCreator
 import com.yumik.absintelligentcloud.logic.network.body.StatusDeviceListBody
-import com.yumik.absintelligentcloud.ui.equipment.EquipmentFragment
+import com.yumik.absintelligentcloud.logic.network.response.DeviceListResponse
+import com.yumik.absintelligentcloud.logic.network.service.DeviceService
+import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
     // TODO: 固定值
-    private val _porcelainList = MutableLiveData<List<Porcelain>>()
-    val porcelainList: LiveData<List<Porcelain>> = _porcelainList
+    val porcelainList = MutableLiveData<List<Porcelain>>()
 
     fun setPorcelainList(list: List<Porcelain>) {
-        _porcelainList.value = list
+        porcelainList.value = list
     }
 
     // 异常设备列表
-    private val _statusDeviceList = MutableLiveData<Pair<StatusDeviceListBody, String>>()
-    val statusDeviceList = Transformations.switchMap(_statusDeviceList) {
-        Repository.getStatusDeviceList(it.first, it.second)
-    }
+    val statusDeviceList = Network.StateLiveData<DeviceListResponse>()
 
     fun getStatusDeviceList(statusDeviceListBody: StatusDeviceListBody, token: String) {
-        _statusDeviceList.value = Pair(statusDeviceListBody, token)
+        viewModelScope.launch {
+            val res = Network.apiCall {
+                ServiceCreator.create(DeviceService::class.java)
+                    .getStatusDeviceList(statusDeviceListBody, token)
+            }
+            statusDeviceList.value = res
+        }
     }
 
     // 最新异常设备列表
-    private val _newStatusDeviceList = MutableLiveData<Pair<StatusDeviceListBody, String>>()
-    val newStatusDeviceList = Transformations.switchMap(_newStatusDeviceList) {
-        Repository.getStatusDeviceList(it.first, it.second)
-    }
+    val newStatusDeviceList = Network.StateLiveData<DeviceListResponse>()
 
     fun getNewStatusDeviceList(statusDeviceListBody: StatusDeviceListBody, token: String) {
-        _newStatusDeviceList.value = Pair(statusDeviceListBody, token)
+        viewModelScope.launch {
+            val res = Network.apiCall {
+                ServiceCreator.create(DeviceService::class.java)
+                    .getStatusDeviceList(statusDeviceListBody, token)
+            }
+            newStatusDeviceList.value = res
+        }
     }
 }

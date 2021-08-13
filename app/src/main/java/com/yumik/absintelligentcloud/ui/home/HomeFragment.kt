@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,11 +23,10 @@ import com.yumik.absintelligentcloud.R
 import com.yumik.absintelligentcloud.databinding.FragmentHomeBinding
 import com.yumik.absintelligentcloud.logic.model.FilterHistory
 import com.yumik.absintelligentcloud.logic.model.Porcelain
+import com.yumik.absintelligentcloud.logic.network.Network
 import com.yumik.absintelligentcloud.logic.network.body.StatusDeviceListBody
-import com.yumik.absintelligentcloud.logic.network.response.EmptyResponse
 import com.yumik.absintelligentcloud.module.device.DeviceAdapter
 import com.yumik.absintelligentcloud.module.porcelain.PorcelainAdapter
-import com.yumik.absintelligentcloud.ui.equipment.EquipmentFragment
 import com.yumik.absintelligentcloud.ui.filter.FilterActivity
 import com.yumik.absintelligentcloud.util.OnLoadMoreListener
 import com.yumik.absintelligentcloud.util.TipsUtil.showMySnackbar
@@ -107,9 +105,9 @@ class HomeFragment : Fragment() {
         viewModel.statusDeviceList.observe(viewLifecycleOwner, {
             mainActivity.dialog.dismissDialog()
             binding.swipeRefresh.isRefreshing = false
-            val result = it.getOrNull()
-            if (result != null) {
-                val data = result.data
+
+            if (it.code == Network.ApiException.CODE_SUCCESS && it.data != null) {
+                val data = it.data
                 if (page == 1)
                     statusDeviceListAdapter.reAdd(data.list)
                 else
@@ -119,18 +117,10 @@ class HomeFragment : Fragment() {
                 val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
                 binding.updateTime.text = formatter.format(Calendar.getInstance().timeInMillis)
             } else {
-                try {
-                    it.onFailure { throwable ->
-                        val errorResponse =
-                            Gson().fromJson(throwable.message, EmptyResponse::class.java)
-                        binding.container.showMySnackbar(
-                            errorResponse.message,
-                            R.color.secondary_red
-                        )
-                    }
-                } catch (e: Exception) {
-                    binding.container.showMySnackbar("网络异常！请检查网络连接", R.color.secondary_yellow)
-                }
+                binding.container.showMySnackbar(
+                    it.message,
+                    R.color.secondary_red
+                )
             }
         })
 
@@ -141,9 +131,8 @@ class HomeFragment : Fragment() {
         viewModel.newStatusDeviceList.observe(viewLifecycleOwner, {
             mainActivity.dialog.dismissDialog()
             binding.swipeRefresh.isRefreshing = false
-            val result = it.getOrNull()
-            if (result != null) {
-                val data = result.data
+            if (it.code == Network.ApiException.CODE_SUCCESS && it.data != null) {
+                val data = it.data
                 statusDeviceListAdapter.add(data.list)
                 binding.statusDeviceNumber.text = data.totalRecords.toString()
                 page = min(data.page + 1, data.totalPages)

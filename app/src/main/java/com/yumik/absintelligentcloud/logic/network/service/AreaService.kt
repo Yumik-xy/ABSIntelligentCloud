@@ -8,7 +8,7 @@ import retrofit2.http.Header
 
 interface AreaService {
     @GET("api/area/list")
-    fun getAreaList(
+    suspend fun getAreaList(
         @Header("Authorization") token: String
-    ): Call<BaseResponse<List<Area>>>
+    ): BaseResponse<List<Area>>
 }

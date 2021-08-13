@@ -3,17 +3,25 @@ package com.yumik.absintelligentcloud.ui.history
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.yumik.absintelligentcloud.logic.Repository
+import androidx.lifecycle.viewModelScope
+import com.yumik.absintelligentcloud.logic.network.Network
+import com.yumik.absintelligentcloud.logic.network.ServiceCreator
 import com.yumik.absintelligentcloud.logic.network.body.HistoryListBody
+import com.yumik.absintelligentcloud.logic.network.response.HistoryListResponse
+import com.yumik.absintelligentcloud.logic.network.service.DeviceService
+import kotlinx.coroutines.launch
 
 class HistoryViewModel : ViewModel() {
     // 获取设备列表
-    private val _historyList = MutableLiveData<Pair<HistoryListBody, String>>()
-    val historyList = Transformations.switchMap(_historyList) {
-        Repository.getHistoryList(it.first, it.second)
-    }
+    val historyList = Network.StateLiveData<HistoryListResponse>()
 
     fun getHistoryList(historyListBody: HistoryListBody, token: String) {
-        _historyList.value = Pair(historyListBody, token)
+        viewModelScope.launch {
+            val res = Network.apiCall {
+                ServiceCreator.create(DeviceService::class.java)
+                    .getHistoryList(historyListBody, token)
+            }
+            historyList.value = res
+        }
     }
 }

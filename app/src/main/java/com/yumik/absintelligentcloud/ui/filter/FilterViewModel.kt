@@ -1,18 +1,24 @@
 package com.yumik.absintelligentcloud.ui.filter
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.yumik.absintelligentcloud.logic.Repository
+import androidx.lifecycle.viewModelScope
+import com.yumik.absintelligentcloud.logic.model.Area
+import com.yumik.absintelligentcloud.logic.network.Network
+import com.yumik.absintelligentcloud.logic.network.ServiceCreator
+import com.yumik.absintelligentcloud.logic.network.service.AreaService
+import kotlinx.coroutines.launch
 
 class FilterViewModel : ViewModel() {
 
-    private val _areaList = MutableLiveData<String>()
-    val areaList = Transformations.switchMap(_areaList) {
-        Repository.getAreaList(it)
-    }
+    val areaListLiveData = Network.StateLiveData<List<Area>>()
 
     fun getAreaList(token: String) {
-        _areaList.value = token
+        viewModelScope.launch {
+            val res = Network.apiCall {
+                ServiceCreator.create(AreaService::class.java)
+                    .getAreaList(token)
+            }
+            areaListLiveData.value = res
+        }
     }
 }

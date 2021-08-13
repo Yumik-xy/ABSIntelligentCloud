@@ -4,22 +4,19 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.Window
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.ViewModelProvider
-import com.google.gson.Gson
 import com.yumik.absintelligentcloud.R
 import com.yumik.absintelligentcloud.databinding.ActivityDeviceBinding
-import com.yumik.absintelligentcloud.logic.network.body.AddDeviceBody
-import com.yumik.absintelligentcloud.logic.network.body.DeviceInfoBody
-import com.yumik.absintelligentcloud.logic.network.response.EmptyResponse
-import com.yumik.absintelligentcloud.ui.area.AreaActivity
 import com.yumik.absintelligentcloud.dialog.ConfirmDialog
 import com.yumik.absintelligentcloud.dialog.LoadingDialog
+import com.yumik.absintelligentcloud.logic.network.Network
+import com.yumik.absintelligentcloud.logic.network.body.AddDeviceBody
+import com.yumik.absintelligentcloud.ui.area.AreaActivity
 import com.yumik.absintelligentcloud.util.*
 import com.yumik.absintelligentcloud.util.TipsUtil.showMySnackbar
 import com.yumik.statusbar.StatusBar
@@ -91,7 +88,7 @@ class DeviceActivity : AppCompatActivity() {
             binding.update.performClick()
         } else {
             loadingDialog.showDialog()
-            viewModel.getDeviceInfo(DeviceInfoBody(deviceId), accessToken)
+            viewModel.getDeviceInfo(deviceId, accessToken)
         }
     }
 
@@ -109,11 +106,10 @@ class DeviceActivity : AppCompatActivity() {
     }
 
     private fun initViewModel() {
-        viewModel.deviceInfoLiveDate.observe(this, {
+        viewModel.deviceInfoLiveData.observe(this, {
             loadingDialog.dismissDialog()
-            val result = it.getOrNull()
-            if (result != null) {
-                val data = result.data
+            if (it.code == Network.ApiException.CODE_SUCCESS && it.data != null) {
+                val data = it.data
                 binding.deviceAbsType.setText(data.absType)
                 binding.deviceAgentName.setText(data.agentName)
                 tempAreaId = data.areaId
@@ -129,78 +125,48 @@ class DeviceActivity : AppCompatActivity() {
                 binding.deviceUserName.setText(data.userName)
                 binding.deviceTireBrand.setText(data.tireBrand)
             } else {
-                try {
-                    it.onFailure { throwable ->
-                        Log.d(TAG, throwable.message.toString())
-                        val errorResponse =
-                            Gson().fromJson(throwable.message, EmptyResponse::class.java)
-                        binding.container.showMySnackbar(
-                            errorResponse.message,
-                            R.color.secondary_red
-                        )
-                    }
-                } catch (e: Exception) {
-                    binding.container.showMySnackbar("网络异常！请检查网络连接", R.color.secondary_yellow)
-                }
+                binding.container.showMySnackbar(
+                    it.message,
+                    R.color.secondary_red
+                )
             }
         })
 
-        viewModel.areaListLiveDate.observe(this, {
+        viewModel.areaListLiveData.observe(this, {
             loadingDialog.dismissDialog()
-            val result = it.getOrNull()
-            if (result != null) {
-                for (area in result.data)
+            if (it.code == Network.ApiException.CODE_SUCCESS && it.data != null) {
+                for (area in it.data)
                     if (area.areaId == tempAreaId) {
                         binding.deviceArea.text = area.areaName
                         binding.deviceArea.tag = area.areaId
                     }
             } else {
-                try {
-                    it.onFailure { throwable ->
-                        Log.d(TAG, throwable.message.toString())
-                        val errorResponse =
-                            Gson().fromJson(throwable.message, EmptyResponse::class.java)
-                        binding.container.showMySnackbar(
-                            errorResponse.message,
-                            R.color.secondary_red
-                        )
-                    }
-                } catch (e: Exception) {
-                    binding.container.showMySnackbar("网络异常！请检查网络连接", R.color.secondary_yellow)
-                }
+                binding.container.showMySnackbar(
+                    it.message,
+                    R.color.secondary_red
+                )
             }
         })
 
-        viewModel.deleteDeviceLiveDate.observe(this, {
+        viewModel.deleteDeviceLiveData.observe(this, {
             loadingDialog.dismissDialog()
-            val result = it.getOrNull()
-            if (result != null) {
+            if (it.code == Network.ApiException.CODE_SUCCESS) {
                 binding.container.showMySnackbar("该设备已删除！", R.color.primary)
                 Thread {
                     Thread.sleep(1000)
                     finish()
                 }.start()
             } else {
-                try {
-                    it.onFailure { throwable ->
-                        Log.d(TAG, throwable.message.toString())
-                        val errorResponse =
-                            Gson().fromJson(throwable.message, EmptyResponse::class.java)
-                        binding.container.showMySnackbar(
-                            errorResponse.message,
-                            R.color.secondary_red
-                        )
-                    }
-                } catch (e: Exception) {
-                    binding.container.showMySnackbar("网络异常！请检查网络连接", R.color.secondary_yellow)
-                }
+                binding.container.showMySnackbar(
+                    it.message,
+                    R.color.secondary_red
+                )
             }
         })
 
-        viewModel.addDeviceLiveDate.observe(this, {
+        viewModel.addDeviceLiveData.observe(this, {
             loadingDialog.dismissDialog()
-            val result = it.getOrNull()
-            if (result != null) {
+            if (it.code == Network.ApiException.CODE_SUCCESS) {
                 binding.container.showMySnackbar("添加成功！", R.color.primary)
                 deviceId = binding.deviceDeviceId.text.toString()
                 binding.manageGroup.visibility = View.VISIBLE
@@ -208,66 +174,37 @@ class DeviceActivity : AppCompatActivity() {
                 enableChange(false)
                 binding.update.text = "修改"
             } else {
-                try {
-                    it.onFailure { throwable ->
-                        Log.d(TAG, throwable.message.toString())
-                        val errorResponse =
-                            Gson().fromJson(throwable.message, EmptyResponse::class.java)
-                        binding.container.showMySnackbar(
-                            errorResponse.message,
-                            R.color.secondary_red
-                        )
-                    }
-                } catch (e: Exception) {
-                    binding.container.showMySnackbar("网络异常！请检查网络连接", R.color.secondary_yellow)
-                }
+                binding.container.showMySnackbar(
+                    it.message,
+                    R.color.secondary_red
+                )
             }
         })
 
-        viewModel.updateDeviceLiveDate.observe(this, {
+        viewModel.updateDeviceLiveData.observe(this, {
             loadingDialog.dismissDialog()
-            val result = it.getOrNull()
-            if (result != null) {
+            if (it.code == Network.ApiException.CODE_SUCCESS) {
                 binding.container.showMySnackbar("修改成功！", R.color.primary)
                 enableChange(false)
                 binding.update.text = "修改"
             } else {
-                try {
-                    it.onFailure { throwable ->
-                        Log.d(TAG, throwable.message.toString())
-                        val errorResponse =
-                            Gson().fromJson(throwable.message, EmptyResponse::class.java)
-                        binding.container.showMySnackbar(
-                            errorResponse.message,
-                            R.color.secondary_red
-                        )
-                    }
-                } catch (e: Exception) {
-                    binding.container.showMySnackbar("网络异常！请检查网络连接", R.color.secondary_yellow)
-                }
+                binding.container.showMySnackbar(
+                    it.message,
+                    R.color.secondary_red
+                )
             }
         })
 
-        viewModel.updateFaultDeviceLiveDate.observe(this, {
+        viewModel.updateFaultDeviceLiveData.observe(this, {
             loadingDialog.dismissDialog()
-            val result = it.getOrNull()
-            if (result != null) {
+            if (it.code == Network.ApiException.CODE_SUCCESS) {
                 binding.container.showMySnackbar("故障已排除！", R.color.primary)
                 setFault(Fault.GOOD)
             } else {
-                try {
-                    it.onFailure { throwable ->
-                        Log.d(TAG, throwable.message.toString())
-                        val errorResponse =
-                            Gson().fromJson(throwable.message, EmptyResponse::class.java)
-                        binding.container.showMySnackbar(
-                            errorResponse.message,
-                            R.color.secondary_red
-                        )
-                    }
-                } catch (e: Exception) {
-                    binding.container.showMySnackbar("网络异常！请检查网络连接", R.color.secondary_yellow)
-                }
+                binding.container.showMySnackbar(
+                    it.message,
+                    R.color.secondary_red
+                )
             }
         })
     }

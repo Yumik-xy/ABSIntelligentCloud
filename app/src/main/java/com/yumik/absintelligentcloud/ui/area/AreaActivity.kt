@@ -12,13 +12,12 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import com.google.gson.Gson
 import com.yumik.absintelligentcloud.R
 import com.yumik.absintelligentcloud.databinding.ActivityAreaBinding
 import com.yumik.absintelligentcloud.databinding.ChipFilterBinding
-import com.yumik.absintelligentcloud.logic.model.Area
-import com.yumik.absintelligentcloud.logic.network.response.EmptyResponse
 import com.yumik.absintelligentcloud.dialog.LoadingDialog
+import com.yumik.absintelligentcloud.logic.model.Area
+import com.yumik.absintelligentcloud.logic.network.Network
 import com.yumik.absintelligentcloud.util.SPUtil
 import com.yumik.absintelligentcloud.util.TipsUtil.showMySnackbar
 import com.yumik.absintelligentcloud.util.setOnUnShakeClickListener
@@ -69,25 +68,15 @@ class AreaActivity : AppCompatActivity() {
     }
 
     private fun initViewModel() {
-        viewModel.areaList.observe(this) {
+        viewModel.areaListLiveData.observe(this) {
             dialog.dismissDialog()
-            val result = it.getOrNull()
-            if (result != null) {
-                setArea(binding.areaFilterChipGroup, result.data, areaId)
+            if (it.code == Network.ApiException.CODE_SUCCESS && it.data != null) {
+                setArea(binding.areaFilterChipGroup, it.data, areaId)
             } else {
-                try {
-                    it.onFailure { throwable ->
-                        Log.d(TAG, throwable.message.toString())
-                        val errorResponse =
-                            Gson().fromJson(throwable.message, EmptyResponse::class.java)
-                        binding.container.showMySnackbar(
-                            errorResponse.message,
-                            R.color.secondary_red
-                        )
-                    }
-                } catch (e: Exception) {
-                    binding.container.showMySnackbar("网络异常！请检查网络连接", R.color.secondary_yellow)
-                }
+                binding.container.showMySnackbar(
+                    it.message,
+                    R.color.secondary_red
+                )
             }
         }
     }

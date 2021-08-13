@@ -2,23 +2,30 @@ package com.yumik.absintelligentcloud.ui.mine
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.yumik.absintelligentcloud.Application
-import com.yumik.absintelligentcloud.logic.Repository
-import com.yumik.absintelligentcloud.logic.network.body.UpdatePasswordBody
+import com.yumik.absintelligentcloud.logic.network.Network
+import com.yumik.absintelligentcloud.logic.network.ServiceCreator
+import com.yumik.absintelligentcloud.logic.network.response.CheckUpdateResponse
+import com.yumik.absintelligentcloud.logic.network.service.DownloadService
+import com.yumik.absintelligentcloud.logic.network.service.UpdatePasswordService
 import com.yumik.absintelligentcloud.util.ApkVersionCodeUtils
+import kotlinx.coroutines.launch
 
 class MineViewModel : ViewModel() {
 
     // 更新密码
-    private val _updatePasswordLiveData = MutableLiveData<Pair<UpdatePasswordBody, String>>()
-    val updatePasswordLiveData = Transformations.switchMap(_updatePasswordLiveData) {
-        Repository.updatePassword(it.first, it.second)
-    }
+    val updatePasswordLiveData = Network.StateLiveData<Nothing>()
 
     fun updatePassword(password: String, token: String) {
-        _updatePasswordLiveData.value = Pair(UpdatePasswordBody(password), token)
+        viewModelScope.launch {
+            val res = Network.apiCall {
+                ServiceCreator.create(UpdatePasswordService::class.java)
+                    .updatePassword(password, token)
+            }
+            updatePasswordLiveData.value = res
+        }
     }
 
     // 获取版本号
@@ -28,14 +35,16 @@ class MineViewModel : ViewModel() {
     val versionName: LiveData<String> = _versionName
 
     // 获取更新信息
-    // checkUpdate()
-    private var _checkUpdateLiveData = MutableLiveData<Boolean>()
-    val checkUpdateLiveData = Transformations.switchMap(_checkUpdateLiveData) {
-        Repository.checkUpdate()
-    }
+    val checkUpdateLiveData = Network.StateLiveData<CheckUpdateResponse>()
 
     fun checkUpdate() {
-        _checkUpdateLiveData.value = true
+        viewModelScope.launch {
+            val res = Network.apiCall {
+                ServiceCreator.create(DownloadService::class.java)
+                    .checkUpdate()
+            }
+            checkUpdateLiveData.value = res
+        }
     }
 
 

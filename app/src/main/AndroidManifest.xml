@@ -56,18 +56,6 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <receiver
-            android:name=".receiver.PackageAddedReceiver"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter android:priority="100">
-                <action android:name="android.intent.action.PACKAGE_INSTALL" />
-                <action android:name="android.intent.action.PACKAGE_ADDED" />
-                <action android:name="android.intent.action.PACKAGE_REMOVED" />
-                <data android:scheme="package" />
-            </intent-filter>
-        </receiver>
-
     </application>
 
 </manifest>

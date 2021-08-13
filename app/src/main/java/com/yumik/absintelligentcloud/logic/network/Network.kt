@@ -1,93 +1,88 @@
 package com.yumik.absintelligentcloud.logic.network
 
-import android.util.Log
-import com.yumik.absintelligentcloud.logic.network.Network.await
+import android.content.Intent
+import androidx.lifecycle.MutableLiveData
+import com.google.gson.JsonParseException
+import com.yumik.absintelligentcloud.Application.Companion.context
 import com.yumik.absintelligentcloud.logic.network.body.*
+import com.yumik.absintelligentcloud.logic.network.response.BaseResponse
 import com.yumik.absintelligentcloud.logic.network.service.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
+import com.yumik.absintelligentcloud.ui.login.LoginActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.withContext
+import org.apache.http.conn.ConnectTimeoutException
+import org.json.JSONException
+import retrofit2.HttpException
+import java.io.IOException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 object Network {
 
     private const val TAG = "Network"
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    private val loginService = ServiceCreator.createNoCache(LoginService::class.java)
-    suspend fun login(loginBody: LoginBody) = loginService.login(loginBody).await()
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    private val getAreaService = ServiceCreator.create(AreaService::class.java)
-    suspend fun getAreaList(token: String) = getAreaService.getAreaList(token).await()
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    private val updatePasswordService =
-        ServiceCreator.createNoCache(UpdatePasswordService::class.java)
-
-    suspend fun updatePassword(updatePasswordBody: UpdatePasswordBody, token: String) =
-        updatePasswordService.updatePassword(updatePasswordBody.password, token).await()
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    private val deviceService = ServiceCreator.createNoCache(DeviceService::class.java)
-    suspend fun getDeviceInfo(deviceInfoBody: DeviceInfoBody, token: String) =
-        deviceService.getDeviceInfo(deviceInfoBody.deviceId, token).await()
-
-    suspend fun getStatusDeviceList(statusDeviceListBody: StatusDeviceListBody, token: String) =
-        deviceService.getStatusDeviceList(statusDeviceListBody, token).await()
-
-    suspend fun getDeviceList(deviceListBody: DeviceListBody, token: String) =
-        deviceService.getDeviceList(deviceListBody, token).await()
-
-    suspend fun deleteDevice(deviceId: String, token: String) =
-        deviceService.deleteDevice(deviceId, token).await()
-
-    suspend fun addDevice(addDeviceBody: AddDeviceBody, token: String) =
-        deviceService.addDevice(addDeviceBody, token).await()
-
-    suspend fun updateDevice(addDeviceBody: AddDeviceBody, token: String) =
-        deviceService.updateDevice(addDeviceBody, token).await()
-
-    suspend fun updateFaultDevice(deviceId: String, token: String) =
-        deviceService.updateFaultDevice(deviceId, token).await()
-
-    suspend fun getHistoryList(historyListBody: HistoryListBody, token: String) =
-        deviceService.getHistoryList(historyListBody, token).await()
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    private val downloadService = ServiceCreator.create(DownloadService::class.java)
-    suspend fun checkUpdate() = downloadService.checkUpdate().await()
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private suspend fun <T> Call<T>.await(): T {
-        return suspendCoroutine { continuation ->
-            enqueue(object : Callback<T> {
-                override fun onResponse(call: Call<T>, response: Response<T>) {
-                    Log.d(TAG, response.toString())
-                    val body = response.body()
-                    when (body) {
-                        null -> {
-                            val errorBody = response.errorBody()
-                            if (errorBody == null) {
-                                continuation.resumeWithException(RuntimeException("empty response"))
-                            } else {
-                                continuation.resumeWithException(RuntimeException(errorBody.string()))
-                            }
-
-                        }
-                        else -> {
-                            continuation.resume(body)
-                        }
-                    }
+    suspend inline fun <T> apiCall(crossinline call: suspend CoroutineScope.() -> BaseResponse<T>): BaseResponse<T> {
+        return withContext(Dispatchers.IO) {
+            val res: BaseResponse<T>
+            try {
+                res = call()
+            } catch (e: Throwable) {
+                return@withContext ApiException.build(e).toResponse<T>()
+            }
+            when (res.code) {
+                ApiException.CODE_AUTH_INVALID -> {
+                    cancel()
+                    // TODO: token过期，强制拉起登录页面
+                    val intent = Intent(context, LoginActivity::class.java)
+                    context.startActivity(intent)
                 }
-
-                override fun onFailure(call: Call<T>, t: Throwable) {
-                    continuation.resumeWithException(t)
-                }
-            })
+            }
+            return@withContext res
         }
     }
+
+    // 网络、数据解析错误处理
+    class ApiException(
+        val code: Int, override val message: String, override val cause: Throwable? = null
+    ) : RuntimeException(message, cause) {
+
+        companion object {
+            // 正常返回码
+            const val CODE_SUCCESS = 200
+
+            // 网络状态码
+            const val CODE_NET_ERROR = 50000
+            const val CODE_TIMEOUT = 50001
+            const val CODE_JSON_PARSE_ERROR = 50002
+            const val CODE_SERVER_ERROR = 50003
+
+            // 业务状态码
+            const val CODE_AUTH_INVALID = 40101
+
+            fun build(e: Throwable): ApiException {
+                return if (e is HttpException) {
+                    ApiException(CODE_NET_ERROR, "网络异常(${e.code()},${e.message()})")
+                } else if (e is UnknownHostException) {
+                    ApiException(CODE_NET_ERROR, "网络连接失败，请检查后再试")
+                } else if (e is ConnectTimeoutException || e is SocketTimeoutException) {
+                    ApiException(CODE_TIMEOUT, "请求超时，请稍后再试")
+                } else if (e is IOException) {
+                    ApiException(CODE_NET_ERROR, "网络异常(${e.message})")
+                } else if (e is JsonParseException || e is JSONException) {
+                    // Json解析失败
+                    ApiException(CODE_JSON_PARSE_ERROR, "数据解析错误，请稍后再试")
+                } else {
+                    ApiException(CODE_SERVER_ERROR, "系统错误(${e.message})")
+                }
+            }
+        }
+
+        fun <T> toResponse(): BaseResponse<T> {
+            return BaseResponse(code, message)
+        }
+    }
+
+    class StateLiveData<T> : MutableLiveData<BaseResponse<T>>()
 }
