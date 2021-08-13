@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yumik.absintelligentcloud.logic.model.Porcelain
-import com.yumik.absintelligentcloud.logic.network.Network
+import com.yumik.absintelligentcloud.logic.network.Repository
 import com.yumik.absintelligentcloud.logic.network.ServiceCreator
 import com.yumik.absintelligentcloud.logic.network.body.StatusDeviceListBody
 import com.yumik.absintelligentcloud.logic.network.response.DeviceListResponse
@@ -20,11 +20,11 @@ class HomeViewModel : ViewModel() {
     }
 
     // 异常设备列表
-    val statusDeviceList = Network.StateLiveData<DeviceListResponse>()
+    val statusDeviceList = Repository.StateLiveData<DeviceListResponse>()
 
     fun getStatusDeviceList(statusDeviceListBody: StatusDeviceListBody, token: String) {
         viewModelScope.launch {
-            val res = Network.apiCall {
+            val res = Repository.apiCall {
                 ServiceCreator.create(DeviceService::class.java)
                     .getStatusDeviceList(statusDeviceListBody, token)
             }
@@ -33,11 +33,11 @@ class HomeViewModel : ViewModel() {
     }
 
     // 最新异常设备列表
-    val newStatusDeviceList = Network.StateLiveData<DeviceListResponse>()
+    val newStatusDeviceList = Repository.StateLiveData<DeviceListResponse>()
 
     fun getNewStatusDeviceList(statusDeviceListBody: StatusDeviceListBody, token: String) {
         viewModelScope.launch {
-            val res = Network.apiCall {
+            val res = Repository.apiCall {
                 ServiceCreator.create(DeviceService::class.java)
                     .getStatusDeviceList(statusDeviceListBody, token)
             }

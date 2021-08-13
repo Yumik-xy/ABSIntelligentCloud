@@ -17,7 +17,7 @@ import com.yumik.absintelligentcloud.databinding.ActivityAreaBinding
 import com.yumik.absintelligentcloud.databinding.ChipFilterBinding
 import com.yumik.absintelligentcloud.dialog.LoadingDialog
 import com.yumik.absintelligentcloud.logic.model.Area
-import com.yumik.absintelligentcloud.logic.network.Network
+import com.yumik.absintelligentcloud.logic.network.Repository
 import com.yumik.absintelligentcloud.util.SPUtil
 import com.yumik.absintelligentcloud.util.TipsUtil.showMySnackbar
 import com.yumik.absintelligentcloud.util.setOnUnShakeClickListener
@@ -70,7 +70,7 @@ class AreaActivity : AppCompatActivity() {
     private fun initViewModel() {
         viewModel.areaListLiveData.observe(this) {
             dialog.dismissDialog()
-            if (it.code == Network.ApiException.CODE_SUCCESS && it.data != null) {
+            if (it.code == Repository.ApiException.CODE_SUCCESS && it.data != null) {
                 setArea(binding.areaFilterChipGroup, it.data, areaId)
             } else {
                 binding.container.showMySnackbar(

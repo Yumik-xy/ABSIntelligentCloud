@@ -13,11 +13,10 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.yumik.absintelligentcloud.databinding.ActivityMainBinding
-import com.yumik.absintelligentcloud.ui.login.LoginActivity
-import com.yumik.absintelligentcloud.ui.BaseActivity
-import com.yumik.absintelligentcloud.ui.equipment.EquipmentFragment
 import com.yumik.absintelligentcloud.dialog.LoadingDialog
+import com.yumik.absintelligentcloud.ui.BaseActivity
 import com.yumik.absintelligentcloud.ui.device.DeviceActivity
+import com.yumik.absintelligentcloud.ui.login.LoginActivity
 import com.yumik.absintelligentcloud.util.SPUtil
 
 
@@ -95,11 +94,16 @@ class MainActivity : BaseActivity() {
                             }
                         startActivity(intentDeviceActivity)
                     }
+                    Application.BROAD_LOG_OUT -> {
+                        accessToken = ""
+                        checkLogin()
+                    }
                 }
             }
         }
         val intentFilter = IntentFilter().apply {
             addAction(Application.BROAD_GET_DEVICE)
+            addAction(Application.BROAD_LOG_OUT)
         }
 
         LocalBroadcastManager.getInstance(this)

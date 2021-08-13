@@ -23,7 +23,7 @@ import com.yumik.absintelligentcloud.R
 import com.yumik.absintelligentcloud.databinding.FragmentHomeBinding
 import com.yumik.absintelligentcloud.logic.model.FilterHistory
 import com.yumik.absintelligentcloud.logic.model.Porcelain
-import com.yumik.absintelligentcloud.logic.network.Network
+import com.yumik.absintelligentcloud.logic.network.Repository
 import com.yumik.absintelligentcloud.logic.network.body.StatusDeviceListBody
 import com.yumik.absintelligentcloud.module.device.DeviceAdapter
 import com.yumik.absintelligentcloud.module.porcelain.PorcelainAdapter
@@ -106,7 +106,7 @@ class HomeFragment : Fragment() {
             mainActivity.dialog.dismissDialog()
             binding.swipeRefresh.isRefreshing = false
 
-            if (it.code == Network.ApiException.CODE_SUCCESS && it.data != null) {
+            if (it.code == Repository.ApiException.CODE_SUCCESS && it.data != null) {
                 val data = it.data
                 if (page == 1)
                     statusDeviceListAdapter.reAdd(data.list)
@@ -131,7 +131,7 @@ class HomeFragment : Fragment() {
         viewModel.newStatusDeviceList.observe(viewLifecycleOwner, {
             mainActivity.dialog.dismissDialog()
             binding.swipeRefresh.isRefreshing = false
-            if (it.code == Network.ApiException.CODE_SUCCESS && it.data != null) {
+            if (it.code == Repository.ApiException.CODE_SUCCESS && it.data != null) {
                 val data = it.data
                 statusDeviceListAdapter.add(data.list)
                 binding.statusDeviceNumber.text = data.totalRecords.toString()

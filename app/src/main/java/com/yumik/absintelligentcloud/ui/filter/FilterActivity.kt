@@ -17,11 +17,10 @@ import com.yumik.absintelligentcloud.databinding.ActivityFilterBinding
 import com.yumik.absintelligentcloud.databinding.ChipFilterBinding
 import com.yumik.absintelligentcloud.logic.model.Area
 import com.yumik.absintelligentcloud.logic.model.FilterHistory
-import com.yumik.absintelligentcloud.logic.network.response.EmptyResponse
 import com.yumik.absintelligentcloud.ui.BaseActivity
 import com.yumik.absintelligentcloud.util.DatePickerFragment
 import com.yumik.absintelligentcloud.dialog.LoadingDialog
-import com.yumik.absintelligentcloud.logic.network.Network
+import com.yumik.absintelligentcloud.logic.network.Repository
 import com.yumik.absintelligentcloud.util.SPUtil
 import com.yumik.absintelligentcloud.util.TipsUtil.showMySnackbar
 import com.yumik.absintelligentcloud.util.setOnUnShakeClickListener
@@ -128,7 +127,7 @@ class FilterActivity : BaseActivity() {
     private fun initViewModel() {
         viewModel.areaListLiveData.observe(this) {
             dialog.dismissDialog()
-            if (it.code == Network.ApiException.CODE_SUCCESS && it.data != null) {
+            if (it.code == Repository.ApiException.CODE_SUCCESS && it.data != null) {
                 if (historyAreaId == null)
                     setArea(binding.areaFilterChipGroup, it.data, tempFixedAreaId)
                 else

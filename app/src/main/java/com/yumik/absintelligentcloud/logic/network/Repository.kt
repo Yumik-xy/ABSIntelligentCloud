@@ -2,12 +2,12 @@ package com.yumik.absintelligentcloud.logic.network
 
 import android.content.Intent
 import androidx.lifecycle.MutableLiveData
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.gson.JsonParseException
-import com.yumik.absintelligentcloud.Application.Companion.context
+import com.yumik.absintelligentcloud.Application
 import com.yumik.absintelligentcloud.logic.network.body.*
 import com.yumik.absintelligentcloud.logic.network.response.BaseResponse
 import com.yumik.absintelligentcloud.logic.network.service.*
-import com.yumik.absintelligentcloud.ui.login.LoginActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -19,7 +19,7 @@ import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
-object Network {
+object Repository {
 
     private const val TAG = "Network"
 
@@ -35,8 +35,8 @@ object Network {
                 ApiException.CODE_AUTH_INVALID -> {
                     cancel()
                     // TODO: token过期，强制拉起登录页面
-                    val intent = Intent(context, LoginActivity::class.java)
-                    context.startActivity(intent)
+                    val intent = Intent().setAction(Application.BROAD_LOG_OUT)
+                    LocalBroadcastManager.getInstance(Application.context).sendBroadcast(intent)
                 }
             }
             return@withContext res
@@ -52,14 +52,13 @@ object Network {
             // 正常返回码
             const val CODE_SUCCESS = 200
 
-            // 网络状态码
-            const val CODE_NET_ERROR = 50000
-            const val CODE_TIMEOUT = 50001
-            const val CODE_JSON_PARSE_ERROR = 50002
-            const val CODE_SERVER_ERROR = 50003
+            // 异常状态码
+            const val CODE_NET_ERROR = 50000 // 网络异常
+            const val CODE_TIMEOUT = 50001 // 连接超时
+            const val CODE_JSON_PARSE_ERROR = 50002 // Json解析失败
+            const val CODE_SERVER_ERROR = 50003 // 服务器错误
 
-            // 业务状态码
-            const val CODE_AUTH_INVALID = 40101
+            const val CODE_AUTH_INVALID = 40101 // token 失效
 
             fun build(e: Throwable): ApiException {
                 return if (e is HttpException) {
@@ -71,7 +70,6 @@ object Network {
                 } else if (e is IOException) {
                     ApiException(CODE_NET_ERROR, "网络异常(${e.message})")
                 } else if (e is JsonParseException || e is JSONException) {
-                    // Json解析失败
                     ApiException(CODE_JSON_PARSE_ERROR, "数据解析错误，请稍后再试")
                 } else {
                     ApiException(CODE_SERVER_ERROR, "系统错误(${e.message})")

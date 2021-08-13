@@ -9,7 +9,7 @@ import java.util.*
 abstract class OnUnShakeClickListener : View.OnClickListener {
 
     companion object {
-        private const val DELAY_TIME = 100
+        private const val DELAY_TIME = 400
     }
 
     private var lastClickTime: Long = 0

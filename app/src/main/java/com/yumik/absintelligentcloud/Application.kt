@@ -10,6 +10,7 @@ class Application : Application() {
         const val BROAD_GET_DEVICE = "com.yumik.absintelligentcloud.getdevice"
         const val BROAD_SEARCH_DEVICE = "com.yumik.absintelligentcloud.searchdevice"
         const val BROAD_ADD_DEVICE = "com.yumik.absintelligentcloud.adddevice"
+        const val BROAD_LOG_OUT = "com.yumik.absintelligentcloud.logout"
     }
 
     override fun onCreate() {

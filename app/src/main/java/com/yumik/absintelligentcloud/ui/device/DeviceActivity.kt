@@ -14,7 +14,7 @@ import com.yumik.absintelligentcloud.R
 import com.yumik.absintelligentcloud.databinding.ActivityDeviceBinding
 import com.yumik.absintelligentcloud.dialog.ConfirmDialog
 import com.yumik.absintelligentcloud.dialog.LoadingDialog
-import com.yumik.absintelligentcloud.logic.network.Network
+import com.yumik.absintelligentcloud.logic.network.Repository
 import com.yumik.absintelligentcloud.logic.network.body.AddDeviceBody
 import com.yumik.absintelligentcloud.ui.area.AreaActivity
 import com.yumik.absintelligentcloud.util.*
@@ -108,7 +108,7 @@ class DeviceActivity : AppCompatActivity() {
     private fun initViewModel() {
         viewModel.deviceInfoLiveData.observe(this, {
             loadingDialog.dismissDialog()
-            if (it.code == Network.ApiException.CODE_SUCCESS && it.data != null) {
+            if (it.code == Repository.ApiException.CODE_SUCCESS && it.data != null) {
                 val data = it.data
                 binding.deviceAbsType.setText(data.absType)
                 binding.deviceAgentName.setText(data.agentName)
@@ -134,7 +134,7 @@ class DeviceActivity : AppCompatActivity() {
 
         viewModel.areaListLiveData.observe(this, {
             loadingDialog.dismissDialog()
-            if (it.code == Network.ApiException.CODE_SUCCESS && it.data != null) {
+            if (it.code == Repository.ApiException.CODE_SUCCESS && it.data != null) {
                 for (area in it.data)
                     if (area.areaId == tempAreaId) {
                         binding.deviceArea.text = area.areaName
@@ -150,7 +150,7 @@ class DeviceActivity : AppCompatActivity() {
 
         viewModel.deleteDeviceLiveData.observe(this, {
             loadingDialog.dismissDialog()
-            if (it.code == Network.ApiException.CODE_SUCCESS) {
+            if (it.code == Repository.ApiException.CODE_SUCCESS) {
                 binding.container.showMySnackbar("该设备已删除！", R.color.primary)
                 Thread {
                     Thread.sleep(1000)
@@ -166,7 +166,7 @@ class DeviceActivity : AppCompatActivity() {
 
         viewModel.addDeviceLiveData.observe(this, {
             loadingDialog.dismissDialog()
-            if (it.code == Network.ApiException.CODE_SUCCESS) {
+            if (it.code == Repository.ApiException.CODE_SUCCESS) {
                 binding.container.showMySnackbar("添加成功！", R.color.primary)
                 deviceId = binding.deviceDeviceId.text.toString()
                 binding.manageGroup.visibility = View.VISIBLE
@@ -183,7 +183,7 @@ class DeviceActivity : AppCompatActivity() {
 
         viewModel.updateDeviceLiveData.observe(this, {
             loadingDialog.dismissDialog()
-            if (it.code == Network.ApiException.CODE_SUCCESS) {
+            if (it.code == Repository.ApiException.CODE_SUCCESS) {
                 binding.container.showMySnackbar("修改成功！", R.color.primary)
                 enableChange(false)
                 binding.update.text = "修改"
@@ -197,7 +197,7 @@ class DeviceActivity : AppCompatActivity() {
 
         viewModel.updateFaultDeviceLiveData.observe(this, {
             loadingDialog.dismissDialog()
-            if (it.code == Network.ApiException.CODE_SUCCESS) {
+            if (it.code == Repository.ApiException.CODE_SUCCESS) {
                 binding.container.showMySnackbar("故障已排除！", R.color.primary)
                 setFault(Fault.GOOD)
             } else {

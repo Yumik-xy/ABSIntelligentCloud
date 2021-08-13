@@ -20,9 +20,8 @@ import com.yumik.absintelligentcloud.MainActivity
 import com.yumik.absintelligentcloud.R
 import com.yumik.absintelligentcloud.databinding.FragmentEquipmentBinding
 import com.yumik.absintelligentcloud.logic.model.FilterHistory
-import com.yumik.absintelligentcloud.logic.network.Network
+import com.yumik.absintelligentcloud.logic.network.Repository
 import com.yumik.absintelligentcloud.logic.network.body.DeviceListBody
-import com.yumik.absintelligentcloud.logic.network.response.EmptyResponse
 import com.yumik.absintelligentcloud.module.device.DeviceAdapter
 import com.yumik.absintelligentcloud.ui.device.DeviceActivity
 import com.yumik.absintelligentcloud.ui.filter.FilterActivity
@@ -126,7 +125,7 @@ class EquipmentFragment : Fragment() {
         viewModel.deviceList.observe(viewLifecycleOwner, {
             mainActivity.dialog.dismissDialog()
             binding.swipeRefresh.isRefreshing = false
-            if (it.code == Network.ApiException.CODE_SUCCESS && it.data != null) {
+            if (it.code == Repository.ApiException.CODE_SUCCESS && it.data != null) {
                 val data = it.data
                 if (page == 1)
                     deviceListAdapter.reAdd(data.list)

@@ -2,6 +2,7 @@ package com.yumik.absintelligentcloud.module.device
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -39,6 +40,11 @@ class DeviceAdapter(private val context: Context, private val danger: Boolean) :
 
             override fun areItemsTheSame(item1: Device, item2: Device): Boolean {
                 return item1.id == item2.id
+            }
+
+            override fun onInserted(position: Int, count: Int) {
+                super.onInserted(position, count)
+                Log.d("DeviceAdapter", "position:$position, count:$count")
             }
         })
 

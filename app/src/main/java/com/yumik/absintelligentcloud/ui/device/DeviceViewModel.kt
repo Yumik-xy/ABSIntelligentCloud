@@ -3,7 +3,7 @@ package com.yumik.absintelligentcloud.ui.device
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yumik.absintelligentcloud.logic.model.Area
-import com.yumik.absintelligentcloud.logic.network.Network
+import com.yumik.absintelligentcloud.logic.network.Repository
 import com.yumik.absintelligentcloud.logic.network.ServiceCreator
 import com.yumik.absintelligentcloud.logic.network.body.AddDeviceBody
 import com.yumik.absintelligentcloud.logic.network.response.DeviceInfoResponse
@@ -13,11 +13,11 @@ import kotlinx.coroutines.launch
 
 class DeviceViewModel : ViewModel() {
 
-    val deviceInfoLiveData = Network.StateLiveData<DeviceInfoResponse>()
+    val deviceInfoLiveData = Repository.StateLiveData<DeviceInfoResponse>()
 
     fun getDeviceInfo(deviceId: String, token: String) {
         viewModelScope.launch {
-            val res = Network.apiCall {
+            val res = Repository.apiCall {
                 ServiceCreator.create(DeviceService::class.java)
                     .getDeviceInfo(deviceId, token)
             }
@@ -25,22 +25,22 @@ class DeviceViewModel : ViewModel() {
         }
     }
 
-    val areaListLiveData = Network.StateLiveData<List<Area>>()
+    val areaListLiveData = Repository.StateLiveData<List<Area>>()
 
     fun getAreaList(token: String) {
         viewModelScope.launch {
-            val res = Network.apiCall {
+            val res = Repository.apiCall {
                 ServiceCreator.create(AreaService::class.java).getAreaList(token)
             }
             areaListLiveData.value = res
         }
     }
 
-    val deleteDeviceLiveData = Network.StateLiveData<Nothing>()
+    val deleteDeviceLiveData = Repository.StateLiveData<Nothing>()
 
     fun deleteDevice(deviceId: String, token: String) {
         viewModelScope.launch {
-            val res = Network.apiCall {
+            val res = Repository.apiCall {
                 ServiceCreator.create(DeviceService::class.java)
                     .deleteDevice(deviceId, token)
             }
@@ -48,11 +48,11 @@ class DeviceViewModel : ViewModel() {
         }
     }
 
-    val addDeviceLiveData = Network.StateLiveData<Nothing>()
+    val addDeviceLiveData = Repository.StateLiveData<Nothing>()
 
     fun addDevice(addDeviceBody: AddDeviceBody, token: String) {
         viewModelScope.launch {
-            val res = Network.apiCall {
+            val res = Repository.apiCall {
                 ServiceCreator.create(DeviceService::class.java)
                     .addDevice(addDeviceBody, token)
             }
@@ -60,11 +60,11 @@ class DeviceViewModel : ViewModel() {
         }
     }
 
-    val updateDeviceLiveData = Network.StateLiveData<Nothing>()
+    val updateDeviceLiveData = Repository.StateLiveData<Nothing>()
 
     fun updateDevice(updateDeviceBody: AddDeviceBody, token: String) {
         viewModelScope.launch {
-            val res = Network.apiCall {
+            val res = Repository.apiCall {
                 ServiceCreator.create(DeviceService::class.java)
                     .updateDevice(updateDeviceBody, token)
             }
@@ -72,11 +72,11 @@ class DeviceViewModel : ViewModel() {
         }
     }
 
-    val updateFaultDeviceLiveData = Network.StateLiveData<Nothing>()
+    val updateFaultDeviceLiveData = Repository.StateLiveData<Nothing>()
 
     fun updateFaultDevice(deviceId: String, token: String) {
         viewModelScope.launch {
-            val res = Network.apiCall {
+            val res = Repository.apiCall {
                 ServiceCreator.create(DeviceService::class.java)
                     .updateFaultDevice(deviceId, token)
             }

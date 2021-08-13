@@ -1,18 +1,21 @@
 package com.yumik.absintelligentcloud.ui.mine
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.yumik.absintelligentcloud.Application
 import com.yumik.absintelligentcloud.MainActivity
 import com.yumik.absintelligentcloud.R
 import com.yumik.absintelligentcloud.databinding.FragmentMineBinding
 import com.yumik.absintelligentcloud.dialog.ConfirmDialog
 import com.yumik.absintelligentcloud.dialog.DownloadDialog
 import com.yumik.absintelligentcloud.dialog.UpdatePasswordDialog
-import com.yumik.absintelligentcloud.logic.network.Network
+import com.yumik.absintelligentcloud.logic.network.Repository
 import com.yumik.absintelligentcloud.util.ApkVersionCodeUtils.getVersionCode
 import com.yumik.absintelligentcloud.util.TipsUtil.showMySnackbar
 import com.yumik.absintelligentcloud.util.setOnUnShakeClickListener
@@ -57,7 +60,7 @@ class MineFragment : Fragment() {
     private fun initViewModel() {
         viewModel.updatePasswordLiveData.observe(viewLifecycleOwner, {
             mainActivity.dialog.dismissDialog()
-            if (it.code == Network.ApiException.CODE_SUCCESS) {
+            if (it.code == Repository.ApiException.CODE_SUCCESS) {
                 updatePasswordDialog?.dismissDialog()
                 binding.container.showMySnackbar(it.message)
             } else {
@@ -73,7 +76,7 @@ class MineFragment : Fragment() {
         })
 
         viewModel.checkUpdateLiveData.observe(viewLifecycleOwner, {
-            if (it.code == Network.ApiException.CODE_SUCCESS && it.data != null) {
+            if (it.code == Repository.ApiException.CODE_SUCCESS && it.data != null) {
                 if (getVersionCode(requireContext()) < it.data.versionCode) {
                     binding.versionBadge.visibility = View.VISIBLE
                 } else {
@@ -117,10 +120,8 @@ class MineFragment : Fragment() {
 
         binding.logout.setOnUnShakeClickListener {
             val confirmExit = ConfirmDialog(requireActivity(), "退出登录", "请确认是否“退出登录”") {
-                (activity as MainActivity).apply {
-                    accessToken = ""
-                    checkLogin()
-                }
+                val intent = Intent().setAction(Application.BROAD_LOG_OUT)
+                LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(intent)
             }
             confirmExit.showDialog()
         }

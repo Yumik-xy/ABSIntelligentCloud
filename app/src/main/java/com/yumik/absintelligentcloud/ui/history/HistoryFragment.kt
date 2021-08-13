@@ -15,7 +15,7 @@ import com.yumik.absintelligentcloud.MainActivity
 import com.yumik.absintelligentcloud.R
 import com.yumik.absintelligentcloud.databinding.FragmentHistoryBinding
 import com.yumik.absintelligentcloud.logic.model.FilterHistory
-import com.yumik.absintelligentcloud.logic.network.Network
+import com.yumik.absintelligentcloud.logic.network.Repository
 import com.yumik.absintelligentcloud.logic.network.body.HistoryListBody
 import com.yumik.absintelligentcloud.module.history.HistoryAdapter
 import com.yumik.absintelligentcloud.ui.equipment.EquipmentFragment
@@ -84,7 +84,7 @@ class HistoryFragment : Fragment() {
         viewModel.historyList.observe(viewLifecycleOwner, {
             mainActivity.dialog.dismissDialog()
             binding.swipeRefresh.isRefreshing = false
-            if (it.code == Network.ApiException.CODE_SUCCESS && it.data != null) {
+            if (it.code == Repository.ApiException.CODE_SUCCESS && it.data != null) {
                 val data = it.data
                 if (page == 1) {
                     historyListAdapter.reAdd(data.list)

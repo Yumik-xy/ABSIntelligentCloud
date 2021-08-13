@@ -12,7 +12,7 @@ import com.yumik.absintelligentcloud.MainActivity
 import com.yumik.absintelligentcloud.R
 import com.yumik.absintelligentcloud.databinding.ActivityLoginBinding
 import com.yumik.absintelligentcloud.dialog.LoadingDialog
-import com.yumik.absintelligentcloud.logic.network.Network
+import com.yumik.absintelligentcloud.logic.network.Repository
 import com.yumik.absintelligentcloud.logic.network.body.LoginBody
 import com.yumik.absintelligentcloud.ui.BaseActivity
 import com.yumik.absintelligentcloud.util.Md5Util.getMD5
@@ -83,7 +83,7 @@ class LoginActivity : BaseActivity() {
     private fun initViewModel() {
         viewModel.loginLiveData.observe(this, {
             dialog.dismissDialog()
-            if (it.code == Network.ApiException.CODE_SUCCESS && it.data != null) {
+            if ((it.code == Repository.ApiException.CODE_SUCCESS || it.code == 0) && it.data != null) {
                 binding.container.showMySnackbar("登录成功！")
                 Thread {
                     Thread.sleep(1000)
