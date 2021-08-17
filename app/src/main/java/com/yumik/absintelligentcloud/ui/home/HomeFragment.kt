@@ -69,7 +69,7 @@ class HomeFragment : Fragment() {
                     val data = Gson().fromJson(result, FilterHistory::class.java)
                     mainActivity.areaId = data.areaFilter
                     page = 1
-                    mainActivity.dialog.showDialog()
+                    binding.swipeRefresh.isRefreshing = true
                     viewModel.getStatusDeviceList(
                         StatusDeviceListBody(page, mainActivity.areaId), mainActivity.accessToken
                     )
@@ -103,7 +103,6 @@ class HomeFragment : Fragment() {
 
     private fun initViewModel() {
         viewModel.statusDeviceList.observe(viewLifecycleOwner, {
-            mainActivity.dialog.dismissDialog()
             binding.swipeRefresh.isRefreshing = false
 
             if (it.code == Repository.ApiException.CODE_SUCCESS && it.data != null) {
@@ -129,7 +128,6 @@ class HomeFragment : Fragment() {
         })
 
         viewModel.newStatusDeviceList.observe(viewLifecycleOwner, {
-            mainActivity.dialog.dismissDialog()
             binding.swipeRefresh.isRefreshing = false
             if (it.code == Repository.ApiException.CODE_SUCCESS && it.data != null) {
                 val data = it.data
@@ -193,7 +191,7 @@ class HomeFragment : Fragment() {
         binding.statusDeviceListRV.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.statusDeviceListRV.adapter = statusDeviceListAdapter
-        mainActivity.dialog.showDialog()
+        binding.swipeRefresh.isRefreshing = true
         viewModel.getStatusDeviceList(
             StatusDeviceListBody(page, mainActivity.areaId), mainActivity.accessToken
         )
@@ -210,7 +208,7 @@ class HomeFragment : Fragment() {
         binding.swipeRefresh.setColorSchemeResources(R.color.primary)
         binding.swipeRefresh.setOnRefreshListener {
             page = 1
-            mainActivity.dialog.showDialog()
+            binding.swipeRefresh.isRefreshing = true
             viewModel.getStatusDeviceList(
                 StatusDeviceListBody(page, mainActivity.areaId), mainActivity.accessToken
             )

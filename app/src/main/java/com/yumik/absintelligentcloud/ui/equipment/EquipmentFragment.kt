@@ -61,7 +61,7 @@ class EquipmentFragment : Fragment() {
                     filterHistory = result
                     filterData = Gson().fromJson(result, FilterHistory::class.java)
                     page = 1
-                    mainActivity.dialog.showDialog()
+                    binding.swipeRefresh.isRefreshing = true
                     viewModel.getDeviceList(
                         getDeviceList(), mainActivity.accessToken
                     )
@@ -123,7 +123,6 @@ class EquipmentFragment : Fragment() {
 
     private fun initViewModel() {
         viewModel.deviceList.observe(viewLifecycleOwner, {
-            mainActivity.dialog.dismissDialog()
             binding.swipeRefresh.isRefreshing = false
             if (it.code == Repository.ApiException.CODE_SUCCESS && it.data != null) {
                 val data = it.data
@@ -160,7 +159,7 @@ class EquipmentFragment : Fragment() {
         binding.swipeRefresh.setColorSchemeResources(R.color.primary)
         binding.swipeRefresh.setOnRefreshListener {
             page = 1
-            mainActivity.dialog.showDialog()
+            binding.swipeRefresh.isRefreshing = true
             viewModel.getDeviceList(
                 getDeviceList(), mainActivity.accessToken
             )
@@ -171,7 +170,7 @@ class EquipmentFragment : Fragment() {
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.deviceListRV.layoutManager = layoutManager
         binding.deviceListRV.adapter = deviceListAdapter
-        mainActivity.dialog.showDialog()
+        binding.swipeRefresh.isRefreshing = true
         viewModel.getDeviceList(
             getDeviceList(), mainActivity.accessToken
         )

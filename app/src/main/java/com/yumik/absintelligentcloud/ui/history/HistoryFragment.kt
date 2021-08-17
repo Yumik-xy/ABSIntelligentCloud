@@ -51,7 +51,7 @@ class HistoryFragment : Fragment() {
                     filterHistory = result
                     filterData = Gson().fromJson(result, FilterHistory::class.java)
                     page = 1
-                    mainActivity.dialog.showDialog()
+                    binding.swipeRefresh.isRefreshing = true
                     viewModel.getHistoryList(
                         getHistoryList(), mainActivity.accessToken
                     )
@@ -82,7 +82,6 @@ class HistoryFragment : Fragment() {
 
     private fun initViewModel() {
         viewModel.historyList.observe(viewLifecycleOwner, {
-            mainActivity.dialog.dismissDialog()
             binding.swipeRefresh.isRefreshing = false
             if (it.code == Repository.ApiException.CODE_SUCCESS && it.data != null) {
                 val data = it.data
@@ -120,7 +119,7 @@ class HistoryFragment : Fragment() {
         binding.swipeRefresh.setColorSchemeResources(R.color.primary)
         binding.swipeRefresh.setOnRefreshListener {
             page = 1
-            mainActivity.dialog.showDialog()
+            binding.swipeRefresh.isRefreshing = true
             viewModel.getHistoryList(
                 getHistoryList(), mainActivity.accessToken
             )
@@ -131,7 +130,7 @@ class HistoryFragment : Fragment() {
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.historyDeviceListRV.layoutManager = layoutManager
         binding.historyDeviceListRV.adapter = historyListAdapter
-        mainActivity.dialog.showDialog()
+        binding.swipeRefresh.isRefreshing = true
         viewModel.getHistoryList(
             getHistoryList(), mainActivity.accessToken
         )
