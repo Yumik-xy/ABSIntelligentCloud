@@ -33,4 +33,15 @@ object ApkVersionCodeUtils {
         }
         return verName
     }
+
+    fun getVerCodeFromName(versionName: String): Long {
+        val split1 = versionName.split('_')
+        if (split1.size == 2) {
+            val split2 = split1[0].split('.')
+            if (split2.size == 3) {
+                return split2[2].toLong()
+            }
+        }
+        return -1L
+    }
 }

@@ -5,14 +5,17 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.Window
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.yumik.absintelligentcloud.databinding.ActivityMainBinding
+import com.yumik.absintelligentcloud.dialog.DownloadDialog
 import com.yumik.absintelligentcloud.dialog.LoadingDialog
 import com.yumik.absintelligentcloud.ui.BaseActivity
 import com.yumik.absintelligentcloud.ui.device.DeviceActivity
@@ -22,8 +25,13 @@ import com.yumik.absintelligentcloud.util.SPUtil
 
 class MainActivity : BaseActivity() {
 
+    companion object {
+        private const val TAG = "MainActivity"
+    }
+
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
+    lateinit var viewModel: MainViewModel
     val dialog = LoadingDialog(this)
 
     var accessToken by SPUtil(this, "accessToken", "")
@@ -39,6 +47,8 @@ class MainActivity : BaseActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
         // 绑定Nav切换控制
         // url: https://stackoverflow.com/questions/59275009/fragmentcontainerview-using-findnavcontroller/59275182#59275182
@@ -57,8 +67,19 @@ class MainActivity : BaseActivity() {
 
         // 检查登录状态 ThemeOverlay_MaterialComponents_MaterialAlertDialog_FullWidthButtons
         checkLogin()
+        // 检查更新
+        viewModel.checkUpdate()
 
         initBroadcast()
+
+        initViewModel()
+    }
+
+    private fun initViewModel() {
+        viewModel.checkUpdateLiveData.observe(this, {
+            val downloadDialog = DownloadDialog(this, it)
+            downloadDialog.show(supportFragmentManager, "downloadDialog")
+        })
     }
 
     // Activity Results API

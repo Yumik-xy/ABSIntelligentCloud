@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import com.yumik.absintelligentcloud.logic.network.service.DownloadService
 import okhttp3.ResponseBody
@@ -33,14 +32,14 @@ class DownloadUtil {
         call?.cancel()
     }
 
-    fun download(url: String, token: String, path: String, downloadListener: DownloadListener) {
+    fun download(url: String, path: String, downloadListener: DownloadListener) {
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://dl.hdslb.com/mobile/latest/")
+            .baseUrl("https://api.github.com/")
             .callbackExecutor(Executors.newSingleThreadExecutor())
             .build()
         try {
             val service = retrofit.create(DownloadService::class.java)
-            call = service.downloadFile(url, token)
+            call = service.downloadFile(url)
             call!!.enqueue(object : Callback<ResponseBody> {
                 override fun onResponse(
                     call: Call<ResponseBody>,
@@ -171,8 +170,15 @@ class DownloadUtil {
         fileInputStream.close()
         val bigInt = BigInteger(1, digest.digest())
         val md5 = bigInt.toString(16)
-        Log.d(TAG,"md5:$md5")
+        Log.d(TAG, "md5:$md5")
         return md5
+    }
+
+    fun getFileLength(file: File): Long {
+        if (!file.isFile) {
+            return 0
+        }
+        return file.length()
     }
 
     interface DownloadListener {

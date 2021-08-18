@@ -43,6 +43,18 @@ object Repository {
         }
     }
 
+    suspend inline fun <T> apiCallT(crossinline call: suspend CoroutineScope.() -> T): T? {
+        return withContext(Dispatchers.IO) {
+            val res: T
+            try {
+                res = call()
+            } catch (e: Throwable) {
+                return@withContext null
+            }
+            return@withContext res
+        }
+    }
+
     // 网络、数据解析错误处理
     class ApiException(
         val code: Int, override val message: String, override val cause: Throwable? = null

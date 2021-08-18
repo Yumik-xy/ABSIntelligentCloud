@@ -11,14 +11,13 @@ import retrofit2.http.Streaming
 import retrofit2.http.Url
 
 interface DownloadService {
-    @GET("/file/getApk")
-    suspend fun checkUpdate(): BaseResponse<CheckUpdateResponse>
+    // @GET("https://api.github.com/repos/Yumik-xy/ABSIntelligentCloud/releases/latest")
+    @GET("https://api.github.com/repos/Yumik-xy/ABSIntelligentCloud/releases/latest")
+    suspend fun checkUpdate(): CheckUpdateResponse
 
     @Streaming
     @GET
     fun downloadFile(
-        @Url url: String,
-//        @Header("Range") range: String, /* bytes=startPos-endPos endPos可以省略 36985byte开始断点下载，则传值为："bytes=36985-" */
-        @Header("Authorization") Authorization: String
+        @Url url: String
     ): Call<ResponseBody>
 }

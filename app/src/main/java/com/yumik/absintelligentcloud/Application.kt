@@ -6,6 +6,7 @@ import android.content.Context
 class Application : Application() {
 
     companion object {
+        var needUpdate: Boolean = false
         lateinit var context: Context
         const val BROAD_GET_DEVICE = "com.yumik.absintelligentcloud.getdevice"
         const val BROAD_SEARCH_DEVICE = "com.yumik.absintelligentcloud.searchdevice"

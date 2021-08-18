@@ -36,7 +36,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:lineSpacingMultiplier="1.5"
-            android:text="本次修复了部分BUG\n请尽快升级版本！"
+            android:text="2021年8月18日更新内容：\n本次修复了部分BUG\n请尽快升级版本！"
             android:textColor="@color/text_1"
             android:textSize="@dimen/text_14" />
 

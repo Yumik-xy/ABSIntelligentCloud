@@ -1,5 +1,6 @@
 package com.yumik.absintelligentcloud.dialog
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
@@ -9,19 +10,20 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.yumik.absintelligentcloud.R
 import com.yumik.absintelligentcloud.databinding.DialogDownloadBinding
+import com.yumik.absintelligentcloud.logic.network.response.CheckUpdateResponse
 import com.yumik.absintelligentcloud.util.DownloadUtil
 import com.yumik.absintelligentcloud.util.GetDirection.getDiskCacheDir
 import com.yumik.absintelligentcloud.util.SPUtil
 import com.yumik.absintelligentcloud.util.TipsUtil.showToast
 import com.yumik.absintelligentcloud.util.setOnUnShakeClickListener
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.math.ceil
 
 class DownloadDialog(
     private val mContext: Context,
-    private val url: String,
-    private val md5: String,
-    private val token: String
+    private val checkUpdateResponse: CheckUpdateResponse,
 ) : DialogFragment() {
 
     companion object {
@@ -31,7 +33,7 @@ class DownloadDialog(
     var filePath by SPUtil(
         mContext,
         "filePath",
-        getDiskCacheDir(mContext) + "update.apk"
+        getDiskCacheDir(mContext) + checkUpdateResponse.assets[0].apkName
     )
 
     private lateinit var dialog: AlertDialog
@@ -60,21 +62,30 @@ class DownloadDialog(
         binding.confirmButton.setOnUnShakeClickListener {
             if (binding.confirmButton.text == "更新" || binding.confirmButton.text == "重新更新") {
                 binding.confirmButton.isEnabled = false
-                downloadUtil.download(url, token, filePath, downloadListener)
+                downloadUtil.download(checkUpdateResponse.assets[0].url, filePath, downloadListener)
             } else if (binding.confirmButton.text == "安装") {
                 installApp(filePath)
             }
         }
 
+        val timeFormat = SimpleDateFormat("yyyy-MM-dd\'T\'HH:mm:ss", Locale.CHINA);
+        val stringFormat = SimpleDateFormat("yyyy年MM月dd日", Locale.CHINA);
+        val time = timeFormat.parse(checkUpdateResponse.time)!!
+        @SuppressLint("SetTextI18n")
+        binding.subTitle.text = "${stringFormat.format(time)}更新内容：\n" +
+                "${checkUpdateResponse.description}\n" +
+                "请尽快更新！"
+
         return dialog
     }
 
+    @SuppressLint("SetTextI18n")
     private fun initDownload() {
         downloadUtil = DownloadUtil()
         Thread {
             File(filePath).also { file ->
                 if (file.exists()) {
-                    if (DownloadUtil().getFileMD5(file) == md5) {
+                    if (DownloadUtil().getFileLength(file) == checkUpdateResponse.assets[0].apkSize) {
                         activity?.runOnUiThread {
                             binding.confirmButton.isEnabled = true
                             binding.confirmButton.text = "安装"
@@ -91,19 +102,6 @@ class DownloadDialog(
                 }
             }
         }.start()
-//
-//        File(filePath).also { file ->
-//            if (file.exists()) {
-//                if (DownloadUtil().getFileMD5(file) == md5) {
-//                    binding.confirmButton.isEnabled = true
-//                    binding.confirmButton.text = "安装"
-//                    binding.message.text = "下载完成"
-//                    binding.progress.progress = 100
-//                    binding.progressTV.text = "100%"
-//                    return // 如果安装文件存在且md5相等，则不下载
-//                }
-//            }
-//        }
 
         downloadListener = object : DownloadUtil.DownloadListener {
             override fun onStart() {
@@ -158,7 +156,7 @@ class DownloadDialog(
         Thread {
             File(path).also { file ->
                 if (file.exists()) {
-                    if (DownloadUtil().getFileMD5(file) == md5) {
+                    if (DownloadUtil().getFileLength(file) == checkUpdateResponse.assets[0].apkSize) {
                         filePath = path
                         DownloadUtil().installApp(
                             mContext,

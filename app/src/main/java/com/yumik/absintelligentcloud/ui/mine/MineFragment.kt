@@ -13,10 +13,9 @@ import com.yumik.absintelligentcloud.MainActivity
 import com.yumik.absintelligentcloud.R
 import com.yumik.absintelligentcloud.databinding.FragmentMineBinding
 import com.yumik.absintelligentcloud.dialog.ConfirmDialog
-import com.yumik.absintelligentcloud.dialog.DownloadDialog
 import com.yumik.absintelligentcloud.dialog.UpdatePasswordDialog
 import com.yumik.absintelligentcloud.logic.network.Repository
-import com.yumik.absintelligentcloud.util.ApkVersionCodeUtils.getVersionCode
+import com.yumik.absintelligentcloud.util.ApkVersionCodeUtils.getVerName
 import com.yumik.absintelligentcloud.util.TipsUtil.showMySnackbar
 import com.yumik.absintelligentcloud.util.setOnUnShakeClickListener
 
@@ -70,35 +69,18 @@ class MineFragment : Fragment() {
                 )
             }
         })
-
-        viewModel.versionName.observe(viewLifecycleOwner, {
-            binding.versionName.text = it
-        })
-
-        viewModel.checkUpdateLiveData.observe(viewLifecycleOwner, {
-            if (it.code == Repository.ApiException.CODE_SUCCESS && it.data != null) {
-                if (getVersionCode(requireContext()) < it.data.versionCode) {
-                    binding.versionBadge.visibility = View.VISIBLE
-                } else {
-                    binding.versionBadge.visibility = View.GONE
-                }
-            }
-        })
     }
 
     private fun initView() {
-        viewModel.checkUpdate() // 只请求一次更新就好了，不是频繁更新没必要轮询
+        binding.versionBadge.visibility = if (Application.needUpdate) View.VISIBLE else View.GONE
+
+        binding.versionName.text = getVerName(requireContext())
+
         binding.checkNew.setOnUnShakeClickListener {
-            if (binding.versionBadge.visibility == View.VISIBLE) {
-                val downloadDialog = DownloadDialog(
-                    requireContext(),
-                    "iBiliPlayer-bili.apk?t=1628079808000",
-                    "3158228ba1c9b3562da5e027a4ff321d",
-                    mainActivity.accessToken
-                )
-                downloadDialog.show(parentFragmentManager, "downloadDialog")
-            } else {
-                binding.container.showMySnackbar("现在已经是最新版本了！")
+            if (Application.needUpdate) {
+                mainActivity.viewModel.checkUpdate()
+            }else {
+                binding.container.showMySnackbar("现在已经是最新版本了")
             }
         }
 
@@ -108,10 +90,8 @@ class MineFragment : Fragment() {
                 setOnConfirmListener(object :
                     UpdatePasswordDialog.OnConfirmListener {
                     override fun confirmClick(oldPassword: String, newPassword: String) {
-                        (activity as MainActivity).apply {
-                            dialog.showDialog()
-                            viewModel.updatePassword(newPassword, accessToken)
-                        }
+                        mainActivity.dialog.showDialog()
+                        viewModel.updatePassword(newPassword, mainActivity.accessToken)
                     }
                 })
                 showDialog()
