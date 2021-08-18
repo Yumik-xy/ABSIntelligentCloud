@@ -85,7 +85,9 @@ class DownloadDialog(
         Thread {
             File(filePath).also { file ->
                 if (file.exists()) {
-                    if (DownloadUtil().getFileLength(file) == checkUpdateResponse.assets[0].apkSize) {
+                    if (DownloadUtil().getFileLength(file) == checkUpdateResponse.assets[0].apkSize &&
+                        filePath.contains(checkUpdateResponse.assets[0].apkName)
+                    ) {
                         activity?.runOnUiThread {
                             binding.confirmButton.isEnabled = true
                             binding.confirmButton.text = "安装"
