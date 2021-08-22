@@ -158,7 +158,9 @@ class DownloadDialog(
         Thread {
             File(path).also { file ->
                 if (file.exists()) {
-                    if (DownloadUtil().getFileLength(file) == checkUpdateResponse.assets[0].apkSize) {
+                    if (DownloadUtil().getFileLength(file) == checkUpdateResponse.assets[0].apkSize &&
+                        filePath.contains(checkUpdateResponse.assets[0].apkName)
+                    ) {
                         filePath = path
                         DownloadUtil().installApp(
                             mContext,

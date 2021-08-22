@@ -15,8 +15,10 @@ class EquipmentViewModel : ViewModel() {
 
     fun getDeviceList(deviceListBody: DeviceListBody, token: String) {
         viewModelScope.launch {
-            val res = ServiceCreator.create(DeviceService::class.java)
-                .getDeviceList(deviceListBody, token)
+            val res = Repository.apiCall {
+                ServiceCreator.create(DeviceService::class.java)
+                    .getDeviceList(deviceListBody, token)
+            }
             deviceList.value = res
         }
     }

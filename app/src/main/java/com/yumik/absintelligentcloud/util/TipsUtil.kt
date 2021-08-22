@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.yumik.absintelligentcloud.R
 
@@ -48,7 +49,14 @@ object TipsUtil {
         textView.setCompoundDrawables(drawable, null, null, null);
         //增加文字和图标的距离
         textView.setCompoundDrawablePadding(20);
-        */
+         */
+        // 设置距离底部的距离
+        val translation = try {
+            this.rootView.findViewById<BottomNavigationView>(R.id.nav_view).height * -1F
+        } catch (e: Exception) {
+            0F
+        }
+        snackbar.view.translationY = translation
         snackbar.show()
     }
 
