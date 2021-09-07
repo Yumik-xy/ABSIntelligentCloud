@@ -12,6 +12,9 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph
+import androidx.navigation.NavGraphNavigator
+import androidx.navigation.NavigatorProvider
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.yumik.absintelligentcloud.databinding.ActivityMainBinding
@@ -19,7 +22,12 @@ import com.yumik.absintelligentcloud.dialog.DownloadDialog
 import com.yumik.absintelligentcloud.dialog.LoadingDialog
 import com.yumik.absintelligentcloud.ui.BaseActivity
 import com.yumik.absintelligentcloud.ui.device.DeviceActivity
+import com.yumik.absintelligentcloud.ui.equipment.EquipmentFragment
+import com.yumik.absintelligentcloud.ui.history.HistoryFragment
+import com.yumik.absintelligentcloud.ui.home.HomeFragment
 import com.yumik.absintelligentcloud.ui.login.LoginActivity
+import com.yumik.absintelligentcloud.ui.mine.MineFragment
+import com.yumik.absintelligentcloud.util.FixFragmentNavigator
 import com.yumik.absintelligentcloud.util.SPUtil
 
 
@@ -30,7 +38,6 @@ class MainActivity : BaseActivity() {
     }
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var navController: NavController
     lateinit var viewModel: MainViewModel
     val dialog = LoadingDialog(this)
 
@@ -52,10 +59,25 @@ class MainActivity : BaseActivity() {
 
         // 绑定Nav切换控制
         // url: https://stackoverflow.com/questions/59275009/fragmentcontainerview-using-findnavcontroller/59275182#59275182
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        navController = navHostFragment.navController
-        binding.navView.setupWithNavController(navController)
+        // val navHostFragment =
+        //     supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        // val navController = navHostFragment.navController
+        // binding.navView.setupWithNavController(navController)
+        // 手动加载navGraph
+        val fragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
+        fragment?.let { it ->
+            val navController = NavHostFragment.findNavController(it)
+            val fragmentNavigator = FixFragmentNavigator(this, it.childFragmentManager, it.id)
+            val provider = navController.navigatorProvider
+            provider.addNavigator(fragmentNavigator)
+            val navGraph = initNavGraph(provider, fragmentNavigator)
+            navController.graph = navGraph
+            binding.navView.setOnNavigationItemSelectedListener { item ->
+                navController.navigate(item.itemId)
+                true
+            }
+        }
+
 
         // 修改状态栏颜色
         // url: https://stackoverflow.com/questions/65423778/system-ui-flag-light-status-bar-and-flag-translucent-status-is-deprecated
@@ -142,5 +164,38 @@ class MainActivity : BaseActivity() {
             needDoItem()
         }
         needDoList.clear()
+    }
+
+    private fun initNavGraph(
+        provider: NavigatorProvider,
+        fragmentNavigator: FixFragmentNavigator
+    ): NavGraph {
+        val navGraph = NavGraph(NavGraphNavigator(provider))
+        val des1 = fragmentNavigator.createDestination()
+        des1.id = R.id.navigation_home
+        des1.className = HomeFragment::class.java.canonicalName!!
+        des1.label = resources.getString(R.string.首页)
+        navGraph.addDestination(des1)
+
+        val des2 = fragmentNavigator.createDestination()
+        des2.id = R.id.navigation_equipment
+        des2.className = EquipmentFragment::class.java.canonicalName!!
+        des2.label = resources.getString(R.string.设备)
+        navGraph.addDestination(des2)
+
+        val des3 = fragmentNavigator.createDestination()
+        des3.id = R.id.navigation_history
+        des3.className = HistoryFragment::class.java.canonicalName!!
+        des3.label = resources.getString(R.string.历史)
+        navGraph.addDestination(des3)
+
+        val des4 = fragmentNavigator.createDestination()
+        des4.id = R.id.navigation_mine
+        des4.className = MineFragment::class.java.canonicalName!!
+        des4.label = resources.getString(R.string.我的)
+        navGraph.addDestination(des4)
+
+        navGraph.startDestination = R.id.navigation_home
+        return navGraph
     }
 }
