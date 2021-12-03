@@ -2,15 +2,9 @@ package com.yumik.absintelligentcloud.ui.home
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -28,6 +22,7 @@ import com.yumik.absintelligentcloud.logic.network.body.StatusDeviceListBody
 import com.yumik.absintelligentcloud.module.device.DeviceAdapter
 import com.yumik.absintelligentcloud.module.porcelain.PorcelainAdapter
 import com.yumik.absintelligentcloud.ui.filter.FilterActivity
+import com.yumik.absintelligentcloud.util.BaseFragment
 import com.yumik.absintelligentcloud.util.OnLoadMoreListener
 import com.yumik.absintelligentcloud.util.TipsUtil.showMySnackbar
 import com.yumik.statusbar.StatusBar
@@ -35,18 +30,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.min
 
-class HomeFragment : Fragment() {
+class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding>() {
 
     companion object {
-        fun newInstance() = HomeFragment()
-        private const val TAG = "HomeFragment"
         private const val DELAY_TIME = 60000L
     }
 
-    private var _binding: FragmentHomeBinding? = null
-    private val binding get() = _binding!!
-
-    private lateinit var viewModel: HomeViewModel
     private lateinit var porcelainAdapter: PorcelainAdapter
     private lateinit var statusDeviceListAdapter: DeviceAdapter
     private lateinit var mainActivity: MainActivity
@@ -77,71 +66,11 @@ class HomeFragment : Fragment() {
             }
         }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        needDoList.add { _binding = null }
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        // 处理 late init
-        viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+    override fun initViewAndData() {
         porcelainAdapter = PorcelainAdapter()
         statusDeviceListAdapter = DeviceAdapter(requireContext(), true)
         mainActivity = activity as MainActivity
 
-        // 处理viewModel回调
-        initViewModel()
-
-        // 处理组件
-        initView()
-
-    }
-
-    private fun initViewModel() {
-        viewModel.statusDeviceList.observe(viewLifecycleOwner, {
-            binding.swipeRefresh.isRefreshing = false
-
-            if (it.code == Repository.ApiException.CODE_SUCCESS && it.data != null) {
-                val data = it.data
-                if (page == 1)
-                    statusDeviceListAdapter.reAdd(data.list)
-                else
-                    statusDeviceListAdapter.add(data.list)
-                binding.statusDeviceNumber.text = data.totalRecords.toString()
-                page = min(data.page + 1, data.totalPages)
-                val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
-                binding.updateTime.text = formatter.format(Calendar.getInstance().timeInMillis)
-            } else {
-                binding.container.showMySnackbar(
-                    it.message,
-                    R.color.secondary_red
-                )
-            }
-        })
-
-        viewModel.porcelainList.observe(viewLifecycleOwner, {
-            porcelainAdapter.add(it)
-        })
-
-        viewModel.newStatusDeviceList.observe(viewLifecycleOwner, {
-            binding.swipeRefresh.isRefreshing = false
-            if (it.code == Repository.ApiException.CODE_SUCCESS && it.data != null) {
-                val data = it.data
-                statusDeviceListAdapter.add(data.list)
-                binding.statusDeviceNumber.text = data.totalRecords.toString()
-                page = min(data.page + 1, data.totalPages)
-                val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
-                binding.updateTime.text = formatter.format(Calendar.getInstance().timeInMillis)
-                handler.postDelayed(runnable, DELAY_TIME)
-            }
-        })
-    }
-
-    private fun initView() {
         // 筛选区
         binding.statusBar.setOnStatusBarClickListener(object : StatusBar.StatusBarClickListener {
             override fun backButtonClick() {}
@@ -218,11 +147,43 @@ class HomeFragment : Fragment() {
         handler.postDelayed(runnable, DELAY_TIME)
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        for (needDoItem in needDoList) {
-            needDoItem()
-        }
-        needDoList.clear()
+    override fun initLiveData() {
+        viewModel.statusDeviceList.observe(viewLifecycleOwner, {
+            binding.swipeRefresh.isRefreshing = false
+
+            if (it.code == Repository.ApiException.CODE_SUCCESS && it.data != null) {
+                val data = it.data
+                if (page == 1)
+                    statusDeviceListAdapter.reAdd(data.list)
+                else
+                    statusDeviceListAdapter.add(data.list)
+                binding.statusDeviceNumber.text = data.totalRecords.toString()
+                page = min(data.page + 1, data.totalPages)
+                val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
+                binding.updateTime.text = formatter.format(Calendar.getInstance().timeInMillis)
+            } else {
+                binding.container.showMySnackbar(
+                    it.message,
+                    R.color.secondary_red
+                )
+            }
+        })
+
+        viewModel.porcelainList.observe(viewLifecycleOwner, {
+            porcelainAdapter.add(it)
+        })
+
+        viewModel.newStatusDeviceList.observe(viewLifecycleOwner, {
+            binding.swipeRefresh.isRefreshing = false
+            if (it.code == Repository.ApiException.CODE_SUCCESS && it.data != null) {
+                val data = it.data
+                statusDeviceListAdapter.add(data.list)
+                binding.statusDeviceNumber.text = data.totalRecords.toString()
+                page = min(data.page + 1, data.totalPages)
+                val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
+                binding.updateTime.text = formatter.format(Calendar.getInstance().timeInMillis)
+                handler.postDelayed(runnable, DELAY_TIME)
+            }
+        })
     }
 }

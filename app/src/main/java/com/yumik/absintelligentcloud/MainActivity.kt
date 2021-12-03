@@ -5,13 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.Window
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import androidx.navigation.NavGraphNavigator
 import androidx.navigation.NavigatorProvider
@@ -58,25 +56,11 @@ class MainActivity : BaseActivity() {
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
         // 绑定Nav切换控制
-        // url: https://stackoverflow.com/questions/59275009/fragmentcontainerview-using-findnavcontroller/59275182#59275182
-        // val navHostFragment =
-        //     supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        // val navController = navHostFragment.navController
-        // binding.navView.setupWithNavController(navController)
-        // 手动加载navGraph
-        val fragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
-        fragment?.let { it ->
-            val navController = NavHostFragment.findNavController(it)
-            val fragmentNavigator = FixFragmentNavigator(this, it.childFragmentManager, it.id)
-            val provider = navController.navigatorProvider
-            provider.addNavigator(fragmentNavigator)
-            val navGraph = initNavGraph(provider, fragmentNavigator)
-            navController.graph = navGraph
-            binding.navView.setOnNavigationItemSelectedListener { item ->
-                navController.navigate(item.itemId)
-                true
-            }
-        }
+        /** @url: https://juejin.cn/post/6925331537399382030 */
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+        binding.navView.setupWithNavController(navController)
 
 
         // 修改状态栏颜色
@@ -164,38 +148,5 @@ class MainActivity : BaseActivity() {
             needDoItem()
         }
         needDoList.clear()
-    }
-
-    private fun initNavGraph(
-        provider: NavigatorProvider,
-        fragmentNavigator: FixFragmentNavigator
-    ): NavGraph {
-        val navGraph = NavGraph(NavGraphNavigator(provider))
-        val des1 = fragmentNavigator.createDestination()
-        des1.id = R.id.navigation_home
-        des1.className = HomeFragment::class.java.canonicalName!!
-        des1.label = resources.getString(R.string.首页)
-        navGraph.addDestination(des1)
-
-        val des2 = fragmentNavigator.createDestination()
-        des2.id = R.id.navigation_equipment
-        des2.className = EquipmentFragment::class.java.canonicalName!!
-        des2.label = resources.getString(R.string.设备)
-        navGraph.addDestination(des2)
-
-        val des3 = fragmentNavigator.createDestination()
-        des3.id = R.id.navigation_history
-        des3.className = HistoryFragment::class.java.canonicalName!!
-        des3.label = resources.getString(R.string.历史)
-        navGraph.addDestination(des3)
-
-        val des4 = fragmentNavigator.createDestination()
-        des4.id = R.id.navigation_mine
-        des4.className = MineFragment::class.java.canonicalName!!
-        des4.label = resources.getString(R.string.我的)
-        navGraph.addDestination(des4)
-
-        navGraph.startDestination = R.id.navigation_home
-        return navGraph
     }
 }

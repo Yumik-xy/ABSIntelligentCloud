@@ -1,8 +1,10 @@
 package com.yumik.absintelligentcloud.logic.network
 
 import android.content.Intent
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.google.gson.Gson
 import com.google.gson.JsonParseException
 import com.yumik.absintelligentcloud.Application
 import com.yumik.absintelligentcloud.logic.network.body.*
@@ -21,7 +23,7 @@ import java.net.UnknownHostException
 
 object Repository {
 
-    private const val TAG = "Network"
+    const val TAG = "Network"
 
     suspend inline fun <T> apiCall(crossinline call: suspend CoroutineScope.() -> BaseResponse<T>): BaseResponse<T> {
         return withContext(Dispatchers.IO) {
@@ -29,6 +31,7 @@ object Repository {
             try {
                 res = call()
             } catch (e: Throwable) {
+                Log.i(TAG, e.toString())
                 return@withContext ApiException.build(e).toResponse<T>()
             }
             when (res.code) {
@@ -74,7 +77,13 @@ object Repository {
 
             fun build(e: Throwable): ApiException {
                 return if (e is HttpException) {
-                    ApiException(CODE_NET_ERROR, "网络异常(${e.code()},${e.message()})")
+                    val errorBody = e.response()?.errorBody()?.string()
+                    if (errorBody != null) {
+                        val data = Gson().fromJson(errorBody, BaseResponse::class.java)
+                        ApiException(CODE_NET_ERROR, "${data.message}(${data.code})")
+                    } else {
+                        ApiException(CODE_NET_ERROR, "网络异常(${e.code()})")
+                    }
                 } else if (e is UnknownHostException) {
                     ApiException(CODE_NET_ERROR, "网络连接失败，请检查后再试")
                 } else if (e is ConnectTimeoutException || e is SocketTimeoutException) {

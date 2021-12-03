@@ -5,13 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
@@ -25,23 +19,15 @@ import com.yumik.absintelligentcloud.logic.network.body.DeviceListBody
 import com.yumik.absintelligentcloud.module.device.DeviceAdapter
 import com.yumik.absintelligentcloud.ui.device.DeviceActivity
 import com.yumik.absintelligentcloud.ui.filter.FilterActivity
+import com.yumik.absintelligentcloud.util.BaseFragment
 import com.yumik.absintelligentcloud.util.OnLoadMoreListener
 import com.yumik.absintelligentcloud.util.TipsUtil.showMySnackbar
 import com.yumik.absintelligentcloud.util.setOnUnShakeClickListener
 import com.yumik.statusbar.StatusBar
 import kotlin.math.min
 
-class EquipmentFragment : Fragment() {
+class EquipmentFragment : BaseFragment<EquipmentViewModel, FragmentEquipmentBinding>() {
 
-    companion object {
-        fun newInstance() = EquipmentFragment()
-        private const val TAG = "EquipmentFragment"
-    }
-
-    private var _binding: FragmentEquipmentBinding? = null
-    private val binding get() = _binding!!
-
-    private lateinit var viewModel: EquipmentViewModel
     private lateinit var deviceListAdapter: DeviceAdapter
     private lateinit var mainActivity: MainActivity
     private lateinit var broadcastReceiver: BroadcastReceiver
@@ -68,31 +54,6 @@ class EquipmentFragment : Fragment() {
                 }
             }
         }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentEquipmentBinding.inflate(inflater, container, false)
-        needDoList.add { _binding = null }
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(this).get(EquipmentViewModel::class.java)
-        deviceListAdapter = DeviceAdapter(requireContext(), false)
-        mainActivity = activity as MainActivity
-
-        // 处理viewModel回调
-        initViewModel()
-
-        // 处理组件
-        initView()
-
-        // 注册广播
-        initBroadcast()
-    }
 
     private fun initBroadcast() {
         broadcastReceiver = object : BroadcastReceiver() {
@@ -121,26 +82,38 @@ class EquipmentFragment : Fragment() {
         }
     }
 
-    private fun initViewModel() {
-        viewModel.deviceList.observe(viewLifecycleOwner, {
-            binding.swipeRefresh.isRefreshing = false
-            if (it.code == Repository.ApiException.CODE_SUCCESS && it.data != null) {
-                val data = it.data
-                if (page == 1)
-                    deviceListAdapter.reAdd(data.list)
-                else
-                    deviceListAdapter.add(data.list)
-                page = min(data.page + 1, data.totalPages)
-            } else {
-                binding.container.showMySnackbar(
-                    it.message,
-                    R.color.secondary_red
-                )
-            }
-        })
+    private fun addDevice() {
+        val intent = Intent(requireActivity(), DeviceActivity::class.java).apply {
+            putExtra("deviceId", "")
+        }
+        startActivity(intent)
     }
 
-    private fun initView() {
+    fun filterDevice() {
+        val intent = Intent(requireActivity(), FilterActivity::class.java).apply {
+            putExtra("type", FilterActivity.FilterType.DEVICE_FILTER.name)
+            putExtra("history", filterHistory)
+        }
+        filterLauncher.launch(intent)
+    }
+
+    private fun getDeviceList(): DeviceListBody {
+        return DeviceListBody(
+            page,
+            filterData.areaFilter,
+            filterData.absType,
+            filterData.deviceId,
+            filterData.userName,
+            filterData.contactNumber,
+            filterData.agentName,
+            filterData.tireBrand
+        )
+    }
+
+    override fun initViewAndData() {
+        deviceListAdapter = DeviceAdapter(requireContext(), false)
+        mainActivity = activity as MainActivity
+
         // 筛选区
         binding.statusBar.setOnStatusBarClickListener(object : StatusBar.StatusBarClickListener {
             override fun backButtonClick() {}
@@ -182,41 +155,27 @@ class EquipmentFragment : Fragment() {
                 )
             }
         })
+
+        // 注册广播
+        initBroadcast()
     }
 
-    private fun addDevice() {
-        val intent = Intent(requireActivity(), DeviceActivity::class.java).apply {
-            putExtra("deviceId", "")
-        }
-        startActivity(intent)
-    }
-
-    fun filterDevice() {
-        val intent = Intent(requireActivity(), FilterActivity::class.java).apply {
-            putExtra("type", FilterActivity.FilterType.DEVICE_FILTER.name)
-            putExtra("history", filterHistory)
-        }
-        filterLauncher.launch(intent)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        for (needDoItem in needDoList) {
-            needDoItem()
-        }
-        needDoList.clear()
-    }
-
-    private fun getDeviceList(): DeviceListBody {
-        return DeviceListBody(
-            page,
-            filterData.areaFilter,
-            filterData.absType,
-            filterData.deviceId,
-            filterData.userName,
-            filterData.contactNumber,
-            filterData.agentName,
-            filterData.tireBrand
-        )
+    override fun initLiveData() {
+        viewModel.deviceList.observe(viewLifecycleOwner, {
+            binding.swipeRefresh.isRefreshing = false
+            if (it.code == Repository.ApiException.CODE_SUCCESS && it.data != null) {
+                val data = it.data
+                if (page == 1)
+                    deviceListAdapter.reAdd(data.list)
+                else
+                    deviceListAdapter.add(data.list)
+                page = min(data.page + 1, data.totalPages)
+            } else {
+                binding.container.showMySnackbar(
+                    it.message,
+                    R.color.secondary_red
+                )
+            }
+        })
     }
 }
